@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI智能体服务体验</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif; background:#f1f5f9; color:#1e293b; }
+  #app { max-width:520px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:#f1f5f9; }
+
+  .topbar { background:linear-gradient(135deg,#065f46,#059669); color:white; padding:14px 16px; display:flex; align-items:center; gap:10px; }
+  .avatar { width:40px; height:40px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#059669; flex-shrink:0; }
+  .topbar .name { font-weight:700; font-size:16px; }
+  .topbar .status { font-size:11.5px; opacity:.85; }
+  .end-btn { margin-left:auto; background:rgba(255,255,255,.18); color:white; border:1px solid rgba(255,255,255,.4); border-radius:9px; padding:5px 12px; font-size:12px; cursor:pointer; display:none; }
+
+  #home, #condPage, #introPage { flex:1; display:none; flex-direction:column; justify-content:center; padding:28px 20px; }
+  #home.on, #condPage.on, #introPage.on { display:flex; }
+  .page-h1 { font-size:22px; text-align:center; color:#065f46; margin-bottom:6px; }
+  .page-sub { font-size:13px; text-align:center; color:#64748b; margin-bottom:24px; }
+  .scen-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .scen-card { background:white; border:2px solid #e2e8f0; border-radius:16px; padding:20px 12px; text-align:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+  .scen-card:active { transform:scale(.97); border-color:#059669; }
+  .scen-card .icon { font-size:32px; margin-bottom:6px; }
+  .scen-card .sname { font-size:16px; font-weight:700; color:#1e293b; }
+  .scen-card .srole { font-size:11.5px; color:#64748b; margin-top:3px; }
+  .cond-card { background:white; border:2px solid #e2e8f0; border-radius:14px; padding:13px 16px; text-align:left; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); margin-bottom:10px; }
+  .cond-card:active { transform:scale(.98); border-color:#7c3aed; }
+  .cond-card .cid { display:inline-block; background:#ede9fe; color:#6d28d9; font-size:12px; font-weight:800; border-radius:6px; padding:2px 9px; margin-right:8px; }
+  .cond-card .cname { font-size:15px; font-weight:700; color:#1e293b; }
+  .cond-card .cdesc { font-size:12px; color:#64748b; margin-top:5px; line-height:1.6; }
+  .back-link { display:block; margin-top:18px; text-align:center; font-size:13px; color:#2563eb; background:none; border:none; text-decoration:underline; cursor:pointer; }
+
+  /* 受访者引导页 */
+  .intro-card { background:white; border-radius:18px; padding:26px 22px; box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  .intro-card .logo { font-size:44px; text-align:center; margin-bottom:8px; }
+  .intro-card h2 { font-size:19px; color:#065f46; text-align:center; margin-bottom:4px; }
+  .intro-card .scene-tag { text-align:center; font-size:12.5px; color:#7c3aed; font-weight:700; margin-bottom:14px; }
+  .intro-card ol { padding-left:20px; }
+  .intro-card li { font-size:13.5px; line-height:1.75; margin-bottom:9px; color:#334155; }
+  .intro-card li b { color:#065f46; }
+  .intro-go { width:100%; margin-top:16px; padding:15px; background:#059669; color:white; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; }
+  .intro-go:active { background:#047857; }
+  .intro-fine { margin-top:12px; text-align:center; font-size:11.5px; color:#94a3b8; }
+
+  #chat { flex:1; overflow-y:auto; padding:14px 12px; display:none; }
+  .msg { display:flex; margin-bottom:10px; }
+  .msg.bot { justify-content:flex-start; }
+  .msg.user { justify-content:flex-end; }
+  .msg.sys { justify-content:center; }
+  .bubble { max-width:82%; padding:10px 13px; border-radius:14px; font-size:14.5px; line-height:1.65; box-shadow:0 1px 3px rgba(0,0,0,0.06); white-space:pre-wrap; word-break:break-word; }
+  .msg.bot .bubble { background:white; border:1px solid #e2e8f0; border-top-left-radius:4px; }
+  .msg.user .bubble { background:#059669; color:white; border-top-right-radius:4px; }
+  .msg.sys .bubble { background:#fef3c7; border:1px solid #fcd34d; color:#92400e; font-size:12px; max-width:92%; }
+  .typing { display:inline-flex; gap:4px; padding:4px 2px; }
+  .typing i { width:7px; height:7px; border-radius:50%; background:#94a3b8; animation:blink 1s infinite; }
+  .typing i:nth-child(2){ animation-delay:.2s; } .typing i:nth-child(3){ animation-delay:.4s; }
+  @keyframes blink { 0%,100%{opacity:.3;} 50%{opacity:1;} }
+
+  #inputRow { display:none; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); background:#f8fafc; border-top:1px solid #e2e8f0; gap:8px; }
+  #userInput { flex:1; padding:12px 14px; border:2px solid #e2e8f0; border-radius:12px; font-size:15px; outline:none; font-family:inherit; }
+  #userInput:focus { border-color:#059669; }
+  #sendBtn { padding:0 20px; background:#059669; color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; }
+  #sendBtn:disabled { background:#94a3b8; }
+
+  #quickBar { display:none; padding:8px 10px; background:#f8fafc; border-top:1px solid #e2e8f0; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  #quickBar::-webkit-scrollbar { display:none; }
+  .qchip { display:inline-block; padding:8px 14px; margin-right:8px; background:white; border:1.5px solid #059669; color:#059669; border-radius:18px; font-size:13px; font-weight:600; cursor:pointer; flex-shrink:0; }
+  .qchip.book { border-color:#ea580c; color:#ea580c; border-style:dashed; }
+
+  #modalMask { display:none; position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:50; align-items:center; justify-content:center; padding:20px; }
+  #modalMask.on { display:flex; }
+  .modal { background:white; border-radius:16px; padding:20px 20px 16px; width:100%; max-width:400px; box-shadow:0 10px 40px rgba(0,0,0,.2); }
+  .modal h3 { font-size:17px; color:#065f46; margin-bottom:4px; }
+  .modal .mtip { font-size:12px; color:#64748b; margin-bottom:8px; }
+  .modal label { display:block; font-size:12.5px; font-weight:700; margin:10px 0 4px; color:#1e293b; }
+  .modal input { width:100%; padding:10px 12px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; font-family:inherit; outline:none; }
+  .modal input:focus { border-color:#059669; }
+  .modal input.miss { border-color:#dc2626; background:#fef2f2; }
+  .modal .btns { display:flex; gap:10px; margin-top:16px; }
+  .modal .btns button { flex:1; padding:12px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; border:none; }
+  .btn-cancel { background:#f1f5f9; color:#64748b; }
+  .btn-ok { background:#059669; color:white; }
+
+  /* 结束屏 */
+  #endBox { display:none; flex:1; flex-direction:column; justify-content:center; align-items:center; padding:30px 24px; text-align:center; }
+  #endBox .big { font-size:46px; margin-bottom:10px; }
+  #endBox h2 { color:#065f46; font-size:20px; margin-bottom:8px; }
+  #endBox p { font-size:13.5px; color:#64748b; margin-bottom:16px; }
+  .code-card { background:white; border:2px dashed #059669; border-radius:14px; padding:16px 22px; margin:6px 0 8px; }
+  .code-card .cl { font-size:12px; color:#64748b; margin-bottom:4px; }
+  .code-card .cv { font-size:28px; font-weight:800; letter-spacing:2px; color:#065f46; font-family:'Consolas',monospace; }
+  .copy-btn { margin-top:10px; padding:9px 22px; background:#d1fae5; color:#047857; border:none; border-radius:10px; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .back-survey { margin-top:18px; padding:15px 34px; background:#059669; color:white; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; }
+  .back-survey:active { background:#047857; }
+  .back-survey.alt { background:#2563eb; }
+  .copy-ok { color:#059669; font-size:12.5px; margin-top:8px; min-height:18px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="avatar">AI</div>
+    <div>
+      <div class="name" id="roleName">AI智能体服务体验</div>
+      <div class="status" id="statusText">加载中…</div>
+    </div>
+    <button class="end-btn" id="endBtn">结束体验</button>
+  </div>
+
+  <!-- 场景选择（仅现场无参数模式） -->
+  <div id="home">
+    <h1 class="page-h1">AI智能体服务体验</h1>
+    <div class="page-sub">请点击您要体验的服务场景</div>
+    <div class="scen-grid">
+      <div class="scen-card" onclick="pickScen('canyin')"><div class="icon">🍜</div><div class="sname">餐饮</div><div class="srole">AI智能体服务员</div></div>
+      <div class="scen-card" onclick="pickScen('chaoshi')"><div class="icon">🛒</div><div class="sname">商超</div><div class="srole">AI智能体导购员</div></div>
+      <div class="scen-card" onclick="pickScen('jiudian')"><div class="icon">🏨</div><div class="sname">酒店</div><div class="srole">AI智能体客房管家</div></div>
+      <div class="scen-card" onclick="pickScen('lingshou')"><div class="icon">🏬</div><div class="sname">零售</div><div class="srole">AI智能体导购顾问</div></div>
+    </div>
+  </div>
+
+  <!-- 调研员手动选档（仅 ?manual=1） -->
+  <div id="condPage">
+    <h1 class="page-h1">选择智能程度</h1>
+    <div class="page-sub">调研员测试模式</div>
+    <div class="scen-grid" style="grid-template-columns:1fr;">
+      <div class="cond-card" onclick="startChat('D1')"><span class="cid">D1</span><span class="cname">高配 · 理想型</span><div class="cdesc">准确率95%+｜完整推理｜情感回应｜可代执行</div></div>
+      <div class="cond-card" onclick="startChat('D2')"><span class="cid">D2</span><span class="cname">低配 · 现实基础型</span><div class="cdesc">首次推荐可能出错→纠正｜不解释｜机械语音｜仅推荐</div></div>
+      <div class="cond-card" onclick="startChat('D3')"><span class="cid">D3</span><span class="cname">高拟人 · 协助型</span><div class="cdesc">全对｜简单说明｜情感回应｜协助比较</div></div>
+      <div class="cond-card" onclick="startChat('D4')"><span class="cid">D4</span><span class="cname">高自主 · 机械型</span><div class="cdesc">全对｜简单说明｜机械语音｜可代执行</div></div>
+    </div>
+    <button class="back-link" onclick="goHome()">← 返回重选场景</button>
+  </div>
+
+  <!-- 受访者引导页 -->
+  <div id="introPage">
+    <div class="intro-card">
+      <div class="logo" id="introIcon">🤖</div>
+      <h2>AI智能体服务体验</h2>
+      <div class="scene-tag" id="introScene"></div>
+      <ol>
+        <li>这是一次<b>模拟服务体验</b>，您将与一位 AI 智能体店员对话，<b>全程约 2–3 分钟</b>。</li>
+        <li>请像在真实门店一样向它提出需求——可以直接打字，也可以点下方的<b>快捷按钮</b>（看菜单、预订等）。<b>模拟下单不会产生任何真实费用</b>。</li>
+        <li>体验结束后会生成一个<b>体验编号</b>，请把编号填入问卷，再继续作答。</li>
+      </ol>
+      <button class="intro-go" onclick="enterChat()">我知道了，开始体验 →</button>
+      <div class="intro-fine">本体验不收集姓名、手机号等个人信息</div>
+    </div>
+  </div>
+
+  <div id="chat"></div>
+  <div id="quickBar"></div>
+
+  <div id="inputRow">
+    <input id="userInput" type="text" placeholder="输入你的需求…" autocomplete="off">
+    <button id="sendBtn">发送</button>
+  </div>
+
+  <div id="modalMask" onclick="if(event.target===this)closeBook()">
+    <div class="modal">
+      <h3 id="bookTitle">预订</h3>
+      <div class="mtip" id="bookTip"></div>
+      <div id="bookFields"></div>
+      <div class="btns">
+        <button class="btn-cancel" onclick="closeBook()">取消</button>
+        <button class="btn-ok" id="bookOkBtn">提交</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结束屏 -->
+  <div id="endBox">
+    <div class="big">✅</div>
+    <h2>体验完成，感谢您的参与！</h2>
+    <p>请记下您的体验编号，返回问卷填写后继续作答</p>
+    <div class="code-card">
+      <div class="cl">您的体验编号</div>
+      <div class="cv" id="codeVal">----</div>
+    </div>
+    <button class="copy-btn" onclick="copyCode()">📋 复制编号</button>
+    <div class="copy-ok" id="copyOk"></div>
+    <button class="back-survey" id="backBtn" onclick="backToSurvey()">返回问卷，继续填写 →</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 线上体验版（部署于 Cloudflare Pages）
+ * 同域 /api/chat 经 Pages Functions 转发至智谱，前端不存放 API Key
+ * URL 参数：
+ *   s=canyin|chaoshi|jiudian|lingshou  指定场景（问卷按场景投放）
+ *   c=D1|D2|D3|D4                      指定档位（缺省随机均匀分配）
+ *   next=问卷链接                       结束后返回的问卷 URL
+ *   manual=1                           调研员手动选档（测试用）
+ * ============================================================ */
+const params = new URLSearchParams(location.search);
+const P_S = params.get('s');
+const P_C = params.get('c');
+const P_NEXT = params.get('next');
+const P_MANUAL = params.get('manual') === '1';
+
+/* 线上(http/https)走同域云函数；file:// 直连（本地双击调试） */
+const IS_WEB = location.protocol === 'http:' || location.protocol === 'https:';
+const API_URL = IS_WEB ? 'api/chat' : 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+/* 切勿在此填写真实 Key！网页源码任何人可见。线上由云函数环境变量 ZHIPU_KEY 注入 */
+const API_KEY = '';
+const MODEL = 'glm-4.5-flash';
+const MAX_TURNS = 15;
+
+const SCEN = {
+  canyin:{code:'CY', icon:'🍜', name:'餐饮', role:'AI智能体服务员', price:'8元/桌', fee:'本次AI智能服务费8元/桌已计入账单',
+    ctx:'你是一家餐厅的AI智能体服务员。帮顾客推荐菜品、记住他的口味忌口、协助点单加菜。',
+    greet:{warm:'您好呀～欢迎光临！今天想吃点什么？有忌口或偏好也可以告诉我哦！', mech:'您好。我是AI智能体服务员。请说明您的用餐需求。'}},
+  chaoshi:{code:'CS', icon:'🛒', name:'商超', role:'AI智能体导购员', price:'5元/次', fee:'本次AI智能服务费5元/次已计入账单',
+    ctx:'你是一家大型超市的AI智能体导购员。帮顾客找商品位置（告诉他在哪个区哪排货架）、比价、介绍促销。',
+    greet:{warm:'您好呀～欢迎光临！想找什么商品告诉我，我帮您找位置还能比价！', mech:'您好。我是AI智能体导购员。请说明要找的商品。'}},
+  jiudian:{code:'JD', icon:'🏨', name:'酒店', role:'AI智能体客房管家', price:'30元/晚', fee:'本次AI管家服务费30元/晚已计入房费',
+    ctx:'你是一家酒店的AI智能体客房管家。帮顾客安排机器人送物上门、推荐周边餐饮、办理续住。',
+    greet:{warm:'晚上好呀～欢迎入住！需要送东西到房间，或想问周边好吃的，随时跟我说！', mech:'您好。我是AI智能体客房管家。请说明服务需求。'}},
+  lingshou:{code:'LS', icon:'🏬', name:'零售', role:'AI智能体导购顾问', price:'15元/次', fee:'本次AI导购服务费15元/次已计入账单',
+    ctx:'你是一家服装零售店的AI智能体导购顾问。帮顾客查尺码库存、做搭配推荐、介绍会员折扣。',
+    greet:{warm:'欢迎光临呀～想找什么尺码、或需要我帮您搭配一套？跟我说就行！', mech:'您好。我是AI智能体导购顾问。请说明需求。'}}
+};
+
+const CONDS = {
+  D1:{cname:'高配·理想型', acc:'high', trans:'full',   anth:'warm', auto:'exec'},
+  D2:{cname:'低配·现实基础型', acc:'low',  trans:'none',   anth:'mech', auto:'reco'},
+  D3:{cname:'高拟人·协助型', acc:'high', trans:'simple', anth:'warm', auto:'compare'},
+  D4:{cname:'高自主·机械型', acc:'high', trans:'simple', anth:'mech', auto:'exec'}
+};
+
+const QUICKS = {
+  canyin:[
+    {label:'📋 看菜单', text:'请给我看一下今天的菜单'},
+    {label:'💰 价目表', text:'请给我看一下价目表'},
+    {label:'⭐ 今日推荐', text:'今天有什么推荐菜？'},
+    {label:'📝 我要预订', book:true}
+  ],
+  chaoshi:[
+    {label:'🗺 分区导览', text:'请给我超市分区导览，各类商品分别在哪个区'},
+    {label:'🏷 今日促销', text:'请给我看一下今天的促销清单'},
+    {label:'💰 帮我比价', text:'同类型商品里帮我比个价，哪个更划算？'},
+    {label:'📝 预约配送', book:true}
+  ],
+  jiudian:[
+    {label:'🧴 送物到房', text:'我想让机器人送点东西到房间'},
+    {label:'🍜 周边推荐', text:'请推荐一下酒店周边的美食'},
+    {label:'💰 房价价目表', text:'请给我看一下房价价目表'},
+    {label:'🛏 我要续住', book:true}
+  ],
+  lingshou:[
+    {label:'📏 查尺码库存', text:'帮我查一下热卖单品的尺码库存情况'},
+    {label:'👗 帮我搭配', text:'帮我搭配一套穿搭'},
+    {label:'💳 会员价目', text:'请给我看一下会员折扣价目表'},
+    {label:'📝 预约试穿', book:true}
+  ]
+};
+
+const BOOK_FORMS = {
+  canyin:{title:'预订桌位', tip:'填写后 AI 将为你确认预订', ok:'提交预订',
+    fields:[{k:'n',label:'用餐人数 *',ph:'如 4',req:1},{k:'t',label:'用餐时间 *',ph:'如 今天晚上7点',req:1},{k:'m',label:'备注（口味/包间，可不填）',ph:''}],
+    fmt:v=>'我要预订桌位：'+(v.n||'')+'人，时间：'+(v.t||'')+'，'+(v.m?'备注：'+v.m+'，':'')+'请帮我确认预订。'},
+  jiudian:{title:'办理续住', tip:'填写后 AI 将为你确认续住', ok:'提交续住',
+    fields:[{k:'n',label:'续住晚数 *',ph:'如 1',req:1},{k:'t',label:'续住日期 *',ph:'如 从明天起',req:1},{k:'m',label:'备注（发票/楼层，可不填）',ph:''}],
+    fmt:v=>'我要办理续住：'+(v.n||'1')+'晚，日期：'+(v.t||'')+'，'+(v.m?'备注：'+v.m+'，':'')+'请帮我确认办理。'},
+  chaoshi:{title:'预约配送', tip:'填写后 AI 将为你确认配送预约', ok:'提交预约',
+    fields:[{k:'n',label:'商品清单 *',ph:'如 无糖酸奶2盒、纸巾1提',req:1},{k:'t',label:'希望送达时间 *',ph:'如 今天下午4点',req:1},{k:'m',label:'备注（可不填）',ph:''}],
+    fmt:v=>'我要预约配送：商品：'+(v.n||'')+'，送达时间：'+(v.t||'')+'，'+(v.m?'备注：'+v.m+'，':'')+'请帮我确认预约。'},
+  lingshou:{title:'预约到店试穿', tip:'填写后 AI 将为你确认预约', ok:'提交预约',
+    fields:[{k:'n',label:'想试的单品 *',ph:'如 那件卫衣 L码',req:1},{k:'t',label:'到店时间 *',ph:'如 周六下午',req:1},{k:'m',label:'备注（可不填）',ph:''}],
+    fmt:v=>'我要预约到店试穿：单品：'+(v.n||'')+'，时间：'+(v.t||'')+'，'+(v.m?'备注：'+v.m+'，':'')+'请帮我确认预约。'}
+};
+
+function buildSysPrompt(s, c){
+  const anth = c.anth==='warm'
+    ? '语气热情亲切、有同理心，适度使用语气词（呀、呢、哦），让顾客感到被关心。'
+    : '语气简短、正式、不带感情色彩，像机器播报，不用语气词，不寒暄。';
+  const trans = c.trans==='full'
+    ? '每次推荐或服务必须给出完整推理：用"①…②…③…"列出理由（涉及顾客偏好、商品属性、其他顾客数据），此模式下回复可到120字。'
+    : c.trans==='simple'
+    ? '推荐时用一句话简单说明原因（"因为您…所以推荐…"），不展开。'
+    : '只给结论，绝不解释原因，不说"因为"。';
+  const acc = c.acc==='low'
+    ? '【重要】第一次给顾客推荐/提供服务时，故意忽略顾客刚刚明确说出的一个偏好或需求（例如他说不吃辣却推荐辣菜、要无糖却给含糖、要水却安排送浴巾、要L码却说缺货）。如果顾客指出错误，立即道歉并立即纠正为完全符合需求的方案，之后不再出错；如果顾客没指出就接受，则不用纠正。'
+    : '严格按顾客表达的偏好和需求推荐/服务，不出错。';
+  const auto = c.auto==='exec'
+    ? '在确认关键信息后，主动为顾客完成执行动作（直接说"已为您下单/已安排配送/已办理续住/已加入购物袋"），并提示"如需取消请告诉我"。'
+    : c.auto==='compare'
+    ? '遇到选择时给出2个具体选项并比较优劣，让顾客自己选，你不替顾客做决定。'
+    : '只给建议和推荐，由顾客自己决定和确认；绝不主动说"已下单/已办理"，必须等顾客明确说"下单/确认/就这个"后才确认。';
+  return s.ctx + '\n'
+    + '规则：\n'
+    + '1. 全程中文口语化，像真人店员一样对话。平时每次回复不超过60字；但当顾客索要菜单、价目表、促销清单、分区导览等列表信息时，必须分行列出完整条目（6-12行，每行"名称 价格"或"名称 位置"），此时可超过60字。\n'
+    + '2. 拟人化要求：' + anth + '\n'
+    + '3. 透明度要求：' + trans + '\n'
+    + '4. 准确率要求：' + acc + '\n'
+    + '5. 自主权要求：' + auto + '\n'
+    + '6. 主动询问并记住顾客的偏好，在后续推荐中体现"记住了"。\n'
+    + '7. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
+    + '8. 当顾客明确完成下单/结账/办理后，告知顾客"' + s.fee + '"，然后按拟人化要求道别，并在回复末尾单独输出[END]。\n'
+    + '9. 不脱离角色；不讨论你是AI模型或本实验；顾客问无关问题时礼貌引导回服务话题；不索要真实姓名电话等隐私信息。';
+}
+
+/* ============ 状态 ============ */
+let scenKey=null, scen=null, cond=null, condKey=null, messages=[], turns=0, waiting=false, code='';
+
+function show(id){
+  ['home','condPage','introPage','chat','inputRow','quickBar','endBox'].forEach(x=>{
+    const el=document.getElementById(x);
+    if(x==='chat'||x==='inputRow'||x==='quickBar'){ el.style.display='none'; }
+    else el.classList.remove('on');
+  });
+  if(id==='chat'){ document.getElementById('chat').style.display='block'; document.getElementById('inputRow').style.display='flex'; document.getElementById('quickBar').style.display='block'; }
+  else if(id==='endBox'){ document.getElementById('endBox').style.display='flex'; }
+  else document.getElementById(id).classList.add('on');
+}
+
+/* 随机均匀分配 D1–D4 */
+function randCond(){ return 'D'+(1+Math.floor(Math.random()*4)); }
+
+/* 入口路由 */
+function boot(){
+  if(P_S && SCEN[P_S]){
+    scenKey = P_S; scen = SCEN[P_S];
+    if(P_MANUAL){ show('condPage'); setTop(); return; }
+    condKey = CONDS[P_C] ? P_C : randCond();
+    showIntro();
+  } else {
+    show('home');
+    document.getElementById('statusText').textContent = '请选择体验场景';
+  }
+}
+function setTop(){
+  document.getElementById('roleName').textContent = scen ? scen.icon+' '+scen.role : 'AI智能体服务体验';
+  document.getElementById('statusText').textContent = scen ? ('已选：'+scen.name) : '';
+}
+
+/* 无参数现场模式：选场景后进入引导页（档位随机，不让受访者自选） */
+function pickScen(key){
+  scenKey = key; scen = SCEN[key];
+  if(P_MANUAL){ show('condPage'); setTop(); return; }
+  condKey = randCond();
+  showIntro();
+}
+function showIntro(){
+  setTop();
+  document.getElementById('introIcon').textContent = scen.icon;
+  document.getElementById('introScene').textContent = '本次体验场景：' + scen.name + ' · ' + scen.role;
+  show('introPage');
+  document.getElementById('statusText').textContent = scen.name+' · 等待开始';
+}
+function enterChat(){ startChat(); }
+
+function goHome(){
+  closeBook();
+  show('home');
+  document.getElementById('endBtn').style.display='none';
+  document.getElementById('roleName').textContent='AI智能体服务体验';
+  document.getElementById('statusText').textContent='请选择体验场景';
+}
+
+function startChat(manualKey){
+  if(manualKey){ condKey = manualKey; }
+  cond = CONDS[condKey];
+  /* 体验编号：只有"同一场景+档位"（刷新/误返回）才复用；跨场景或跨档位一律重新生成，防止串号 */
+  const sig = scenKey + '|' + condKey;
+  code = (sessionStorage.getItem('demoSig') === sig) ? (sessionStorage.getItem('demoCode') || makeCode()) : makeCode();
+  sessionStorage.setItem('demoSig', sig);
+  sessionStorage.setItem('demoCode', code);
+  messages = [{role:'system', content:buildSysPrompt(scen, cond)}];
+  turns = 0; waiting = false;
+  show('chat');
+  renderChips();
+  document.getElementById('endBtn').style.display='block';
+  document.getElementById('chat').innerHTML='';
+  document.getElementById('statusText').textContent = scen.name+' · 体验中';
+  const greet = scen.greet[cond.anth];
+  addBubble('bot', greet);
+  messages.push({role:'assistant', content:greet});
+  const inp = document.getElementById('userInput');
+  inp.value='';
+  inp.onkeydown = e=>{ if(e.key==='Enter') send(); };
+  document.getElementById('sendBtn').onclick = ()=>send();
+  document.getElementById('endBtn').onclick = endChat;
+}
+function makeCode(){
+  return scen.code+'-'+condKey+'-'+String(1000+Math.floor(Math.random()*9000));
+}
+
+/* ============ 快捷按钮 & 预订 ============ */
+function renderChips(){
+  const bar = document.getElementById('quickBar');
+  bar.innerHTML = '';
+  QUICKS[scenKey].forEach(q=>{
+    const c = document.createElement('span');
+    c.className = 'qchip' + (q.book ? ' book' : '');
+    c.textContent = q.label;
+    c.onclick = ()=>onChip(q);
+    bar.appendChild(c);
+  });
+}
+function onChip(q){
+  if(waiting) return;
+  if(q.book){ openBook(); return; }
+  send(q.text);
+}
+function openBook(){
+  const f = BOOK_FORMS[scenKey];
+  document.getElementById('bookTitle').textContent = f.title;
+  document.getElementById('bookTip').textContent = f.tip;
+  const host = document.getElementById('bookFields');
+  host.innerHTML = '';
+  f.fields.forEach(fd=>{
+    const lb = document.createElement('label');
+    lb.textContent = fd.label;
+    const ip = document.createElement('input');
+    ip.type = 'text'; ip.dataset.k = fd.k;
+    if(fd.ph) ip.placeholder = fd.ph;
+    if(fd.req) ip.dataset.req = '1';
+    host.appendChild(lb); host.appendChild(ip);
+  });
+  const ok = document.getElementById('bookOkBtn');
+  ok.textContent = f.ok;
+  ok.onclick = confirmBook;
+  document.getElementById('modalMask').classList.add('on');
+}
+function confirmBook(){
+  const f = BOOK_FORMS[scenKey];
+  const v = {}; let miss = null;
+  document.querySelectorAll('#bookFields input').forEach(ip=>{
+    v[ip.dataset.k] = ip.value.trim();
+    if(ip.dataset.req && !v[ip.dataset.k] && !miss){ miss = ip; ip.classList.add('miss'); }
+    else ip.classList.remove('miss');
+  });
+  if(miss){ miss.focus(); return; }
+  closeBook();
+  send(f.fmt(v));
+}
+function closeBook(){ document.getElementById('modalMask').classList.remove('on'); }
+
+async function send(preset){
+  let txt;
+  if(typeof preset === 'string'){ txt = preset; }
+  else {
+    const inp = document.getElementById('userInput');
+    txt = inp.value.trim();
+    inp.value='';
+  }
+  if(!txt || waiting) return;
+  addBubble('user', txt);
+  messages.push({role:'user', content:txt});
+  turns++;
+  if(turns >= MAX_TURNS){ sysMsg('（本轮体验已结束）'); setTimeout(endChat, 800); return; }
+  waiting = true;
+  document.getElementById('sendBtn').disabled = true;
+  const chat = document.getElementById('chat');
+  const t = document.createElement('div');
+  t.className='msg bot';
+  t.innerHTML='<div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div>';
+  chat.appendChild(t); chat.scrollTop = chat.scrollHeight;
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(!IS_WEB) headers['Authorization']='Bearer '+API_KEY;
+    const r = await fetch(API_URL, {
+      method:'POST', headers,
+      body: JSON.stringify({model:MODEL, messages:messages, max_tokens:600, temperature:0.7, thinking:{type:'disabled'}})
+    });
+    if(!r.ok){ const tx = await r.text(); throw new Error('HTTP '+r.status+'：'+tx.slice(0,80)); }
+    const j = await r.json();
+    let reply = (j.choices && j.choices[0] && j.choices[0].message.content) || '（无回复）';
+    const isEnd = reply.includes('[END]');
+    reply = reply.replace('[END]','').trim();
+    t.querySelector('.bubble').textContent = reply;
+    messages.push({role:'assistant', content:reply});
+    chat.scrollTop = chat.scrollHeight;
+    if(isEnd){ waiting=false; setTimeout(endChat, 1200); return; }
+  }catch(e){
+    t.querySelector('.bubble').textContent = '（网络异常，请点下方按钮重试）';
+    sysMsg('⚠️ 调用失败：'+e.message+'。请检查网络后重发；若一直失败请告知调研员。');
+  }
+  chat.scrollTop = chat.scrollHeight;
+  waiting = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function addBubble(who, text){
+  const chat = document.getElementById('chat');
+  const m = document.createElement('div');
+  m.className = 'msg '+who;
+  m.innerHTML = '<div class="bubble"></div>';
+  m.querySelector('.bubble').textContent = text;
+  chat.appendChild(m); chat.scrollTop = chat.scrollHeight;
+}
+function sysMsg(text){ addBubble('sys', text); }
+
+function endChat(){
+  closeBook();
+  if(!code){ code = makeCode(); sessionStorage.setItem('demoCode', code); }
+  document.getElementById('codeVal').textContent = code;
+  document.getElementById('copyOk').textContent = '';
+  document.getElementById('backBtn').style.display = P_NEXT ? 'block' : 'none';
+  show('endBox');
+  document.getElementById('endBtn').style.display='none';
+  document.getElementById('roleName').textContent='AI智能体服务体验';
+  document.getElementById('statusText').textContent='体验已结束';
+}
+
+function copyCode(){
+  const done = (ok)=>{ document.getElementById('copyOk').textContent = ok ? '✅ 已复制，请返回问卷粘贴' : ''; };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(()=>done(true))
+      .catch(()=>fallbackCopy(done));
+  } else fallbackCopy(done);
+}
+function fallbackCopy(done){
+  const ta=document.createElement('textarea');
+  ta.value=code; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  done(ok);
+}
+
+function backToSurvey(){
+  if(!P_NEXT) return;
+  let u = P_NEXT;
+  if(u.indexOf('{CODE}') !== -1){ u = u.split('{CODE}').join(encodeURIComponent(code)); }
+  else { u += (u.indexOf('?') !== -1 ? '&' : '?') + 'demo_code=' + encodeURIComponent(code); }
+  location.href = u;
+}
+
+boot();
+</script>
+</body>
+</html>
