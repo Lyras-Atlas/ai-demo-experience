@@ -53,25 +53,31 @@ export async function onRequestPost(context) {
 
   /* 强制使用的安全参数，防止前端被篡改后乱用其他模型/超大额度 */
   const body = {
-    model: 'glm-4.5-flash',
+    model: 'glm-4-flash',
     messages: payload.messages,
     max_tokens: 600,
     temperature: typeof payload.temperature === 'number' ? payload.temperature : 0.7,
-    thinking: { type: 'disabled' }   // 关键：Flash 是推理模型，不关闭会吃光 token
+    thinking: { type: 'disabled' }
   };
 
+  /* 429 限流时自动重试，最多 3 次，每次间隔 1.2 秒 */
+  const MAX_RETRY = 3;
   let upstream;
-  try {
-    upstream = await fetch(ZHIPU_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + env.ZHIPU_KEY
-      },
-      body: JSON.stringify(body)
-    });
-  } catch (e) {
-    return jsonResponse({ error: { message: '上游智谱接口网络异常：' + e.message } }, 502);
+  for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
+    try {
+      upstream = await fetch(ZHIPU_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + env.ZHIPU_KEY
+        },
+        body: JSON.stringify(body)
+      });
+      if (upstream.status !== 429) break;
+      if (attempt < MAX_RETRY) await new Promise(r => setTimeout(r, 1200));
+    } catch (e) {
+      return jsonResponse({ error: { message: '上游智谱接口网络异常：' + e.message } }, 502);
+    }
   }
 
   /* 透传智谱返回的 JSON 和状态码（错误信息也原样返回，便于排查） */
