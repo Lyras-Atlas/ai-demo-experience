@@ -1,7 +1,6 @@
 /* ============================================================
  * Cloudflare Pages Function —— /api/tts
- * 作用：浏览器端 → 同域 /api/tts → 智谱 GLM-TTS 语音合成
- * 返回 wav 音频，前端用 Audio 播放
+ * 智谱 GLM-TTS 语音合成，429 限流时自动重试
  * 音色：tongtong(彤彤女声) / xiaochen(小陈男声) / chuichui(锤锤)
  * ============================================================ */
 
@@ -37,27 +36,37 @@ export async function onRequestPost(context) {
   const text = (payload.text || '').trim();
   if (!text) return jsonResponse({ error: { message: 'text 不能为空' } }, 400);
 
+  /* 档位决定音色：warm 拟人化用女声彤彤，mech 机械用男声小陈 */
+  const isMale = payload.voice === 'male';
+  const voice = isMale ? 'xiaochen' : 'tongtong';
+
   const body = {
     model: 'glm-tts',
     input: text.slice(0, 1024),
-    voice: payload.voice || 'tongtong',
+    voice: voice,
     response_format: 'wav',
-    speed: typeof payload.speed === 'number' ? payload.speed : 1.0,
+    speed: 1.0,
     volume: 1.0
   };
 
+  /* 429 限流时自动重试，最多 3 次，每次间隔 1.2 秒 */
+  const MAX_RETRY = 3;
   let upstream;
-  try {
-    upstream = await fetch(TTS_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + env.ZHIPU_KEY
-      },
-      body: JSON.stringify(body)
-    });
-  } catch (e) {
-    return jsonResponse({ error: { message: '上游异常：' + e.message } }, 502);
+  for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
+    try {
+      upstream = await fetch(TTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + env.ZHIPU_KEY
+        },
+        body: JSON.stringify(body)
+      });
+      if (upstream.status !== 429) break;
+      if (attempt < MAX_RETRY) await new Promise(r => setTimeout(r, 1200));
+    } catch (e) {
+      return jsonResponse({ error: { message: '上游异常：' + e.message } }, 502);
+    }
   }
 
   if (!upstream.ok) {
@@ -68,7 +77,6 @@ export async function onRequestPost(context) {
     });
   }
 
-  /* 透传音频 */
   const audioBuffer = await upstream.arrayBuffer();
   return new Response(audioBuffer, {
     status: 200,
