@@ -21,8 +21,14 @@
   .topbar .status::before { content:''; width:7px; height:7px; border-radius:50%; background:#fed7aa; flex-shrink:0;
     box-shadow:0 0 0 0 rgba(253,215,170,.7); animation:pulse 2s infinite; }
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(253,215,170,.6);} 70%{box-shadow:0 0 0 7px rgba(253,215,170,0);} 100%{box-shadow:0 0 0 0 rgba(253,215,170,0);} }
-  .end-btn { margin-left:auto; background:rgba(255,255,255,.16); color:white; border:1px solid rgba(255,255,255,.45);
+  .end-btn { background:rgba(255,255,255,.16); color:white; border:1px solid rgba(255,255,255,.45);
     border-radius:20px; padding:6px 14px; font-size:12px; cursor:pointer; display:none; transition:background .2s; }
+  .tts-btn { margin-left:auto; margin-right:8px; padding:6px 11px; font-size:14px; }
+  #micBtn { width:44px; height:44px; border-radius:50%; border:2px solid #fdba74; background:#fff7ed; font-size:18px;
+    cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:transform .15s, background .2s; }
+  #micBtn:active { transform:scale(.9); }
+  #micBtn.rec { background:#dc2626; border-color:#dc2626; animation:recPulse 1.2s infinite; }
+  @keyframes recPulse { 0%{box-shadow:0 0 0 0 rgba(220,38,38,.45);} 70%{box-shadow:0 0 0 10px rgba(220,38,38,0);} 100%{box-shadow:0 0 0 0 rgba(220,38,38,0);} }
   .end-btn:active { background:rgba(255,255,255,.3); }
 
   /* 任务引导条 */
@@ -159,6 +165,70 @@
     cursor:pointer; transition:transform .15s; letter-spacing:.5px; }
   .back-survey:active { transform:scale(.97); }
   .copy-ok { color:#ea580c; font-size:12.5px; margin-top:8px; min-height:18px; font-weight:600; }
+  .try-other { width:100%; margin-top:10px; padding:14px; border:2px solid #fdba74; border-radius:14px; font-size:15px; font-weight:700;
+    color:#c2410c; background:#fff7ed; cursor:pointer; transition:background .2s; }
+  .try-other:active { background:#ffedd5; }
+
+  /* ============ 服务菜单主界面 ============ */
+  #menuPage { flex:1; display:none; flex-direction:column; padding:14px 14px 90px; overflow-y:auto; animation:pageIn .35s ease; }
+  #menuPage.on { display:flex; }
+  .menu-hero { background:linear-gradient(135deg,#fff7ed,#ffedd5); border-radius:18px; padding:16px; margin-bottom:14px;
+    border:1px solid #fed7aa; box-shadow:0 4px 14px rgba(234,88,12,.08); }
+  .menu-hero .mh-t { font-size:15px; font-weight:700; color:#9a3412; }
+  .menu-hero .mh-d { font-size:12.5px; color:#7c2d12; margin-top:6px; line-height:1.7; }
+  .sec-title { font-size:14px; font-weight:700; color:#1e293b; margin:4px 2px 10px; display:flex; align-items:center; gap:6px; }
+  .sec-title::before { content:''; width:4px; height:14px; background:linear-gradient(#ea580c,#f97316); border-radius:2px; }
+  .hl-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:18px; }
+  .hl-card { background:white; border:1.5px solid #ffedd5; border-radius:14px; padding:12px 8px; text-align:center;
+    box-shadow:0 2px 8px rgba(234,88,12,.06); transition:transform .15s; }
+  .hl-card:active { transform:scale(.95); }
+  .hl-card .hn { font-size:13px; font-weight:700; color:#1e293b; }
+  .hl-card .hp { font-size:14px; font-weight:800; color:#ea580c; margin:4px 0; }
+  .hl-card .ht { font-size:10.5px; color:#64748b; line-height:1.4; }
+  .menu-list { background:white; border:1.5px solid #ffedd5; border-radius:16px; padding:6px 14px; margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(234,88,12,.05); }
+  .menu-list .ml-line { font-size:13px; color:#334155; line-height:2; border-bottom:1px dashed #fed7aa; }
+  .menu-list .ml-line:last-child { border-bottom:none; }
+  .act-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .act-btn { background:linear-gradient(135deg,#ea580c,#f97316); color:white; border:none; border-radius:14px; padding:12px 6px;
+    font-size:12.5px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(249,115,22,.3); transition:transform .15s; }
+  .act-btn:active { transform:scale(.94); }
+
+  /* ============ AI 服务机器人 悬浮按钮 ============ */
+  .ai-fab { position:fixed; right:16px; bottom:22px; width:60px; height:60px; border-radius:50%;
+    background:linear-gradient(135deg,#c2410c,#f97316); color:white; border:none; font-size:26px; cursor:pointer;
+    box-shadow:0 6px 20px rgba(234,88,12,.45); z-index:40; display:flex; align-items:center; justify-content:center;
+    animation:fabPulse 2.4s infinite; }
+  @keyframes fabPulse { 0%{box-shadow:0 6px 20px rgba(234,88,12,.45);} 50%{box-shadow:0 6px 28px rgba(249,115,22,.7);} 100%{box-shadow:0 6px 20px rgba(234,88,12,.45);} }
+  .ai-fab .dot { position:absolute; top:2px; right:2px; width:12px; height:12px; background:#22c55e; border-radius:50%;
+    border:2px solid white; }
+  .ai-tip { position:fixed; right:84px; bottom:32px; max-width:200px; background:white; border:1px solid #fed7aa;
+    color:#7c2d12; font-size:12.5px; padding:8px 12px; border-radius:12px; box-shadow:0 4px 14px rgba(15,23,42,.12);
+    z-index:40; animation:tipIn .4s ease; }
+  .ai-tip::after { content:''; position:absolute; right:-7px; top:14px; width:12px; height:12px; background:white;
+    border-right:1px solid #fed7aa; border-bottom:1px solid #fed7aa; transform:rotate(-45deg); }
+  @keyframes tipIn { from{opacity:0; transform:translateX(10px);} to{opacity:1; transform:none;} }
+
+  /* ============ 聊天抽屉 ============ */
+  #chatMask { display:none; position:fixed; inset:0; background:rgba(15,23,42,.4); z-index:45; backdrop-filter:blur(2px); }
+  #chatMask.on { display:block; }
+  #chatDrawer { position:fixed; left:0; right:0; bottom:0; height:86vh; background:#fff7ed; border-radius:22px 22px 0 0;
+    z-index:46; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+    box-shadow:0 -10px 40px rgba(15,23,42,.2); }
+  #chatDrawer.open { transform:translateY(0); }
+  .drawer-head { background:linear-gradient(135deg,#c2410c,#ea580c,#f97316); color:white; padding:12px 16px;
+    border-radius:22px 22px 0 0; display:flex; align-items:center; gap:10px; }
+  .drawer-head .grip { position:absolute; top:8px; left:50%; transform:translateX(-50%); width:40px; height:4px;
+    background:rgba(255,255,255,.5); border-radius:2px; }
+  .drawer-head .av { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.95); color:#ea580c;
+    font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; margin-top:6px; }
+  .drawer-head .dn { font-weight:700; font-size:14px; margin-top:6px; flex:1; }
+  .drawer-head .close { background:rgba(255,255,255,.2); border:none; color:white; width:32px; height:32px; border-radius:50%;
+    font-size:18px; cursor:pointer; margin-top:6px; }
+  #chatDrawer #chat { flex:1; }
+  #chatDrawer #quickBar { border-top:1px solid #fed7aa; background:rgba(255,255,255,.9); }
+  #chatDrawer #inputRow { border-top:1px solid #fed7aa; }
+</style>
 
   /* 调研员工具区（结束屏底部，低调虚线分隔） */
   #resBox { display:none; width:100%; margin-top:22px; padding-top:14px; border-top:1px dashed #cbd5e1; }
@@ -202,6 +272,7 @@
       <div class="name" id="roleName">AI智能体服务体验</div>
       <div class="status" id="statusText">加载中…</div>
     </div>
+    <button class="end-btn tts-btn" id="ttsBtn" title="语音播报开关">🔊</button>
     <button class="end-btn" id="endBtn">结束体验</button>
   </div>
 
@@ -221,8 +292,8 @@
 
   <!-- 调研员手动选档（仅 ?manual=1） -->
   <div id="condPage">
-    <h1 class="page-h1">选择智能程度</h1>
-    <div class="page-sub">调研员测试模式</div>
+    <h1 class="page-h1">选择体验档位</h1>
+    <div class="page-sub">请选择一个体验档位开始</div>
     <div class="scen-grid" style="grid-template-columns:1fr;">
       <div class="cond-card" onclick="startChat('D1')"><span class="cid">D1</span><span class="cname">高配 · 理想型</span><div class="cdesc">准确率95%+｜完整推理｜情感回应｜可代执行</div></div>
       <div class="cond-card" onclick="startChat('D2')"><span class="cid">D2</span><span class="cname">低配 · 现实基础型</span><div class="cdesc">首次推荐可能出错→纠正｜不解释｜机械语音｜仅推荐</div></div>
@@ -248,12 +319,42 @@
     </div>
   </div>
 
-  <div id="chat"></div>
-  <div id="quickBar"></div>
+  <!-- 服务菜单主界面：用户先看本店服务，AI 在一旁待命 -->
+  <div id="menuPage">
+    <div class="menu-hero">
+      <div class="mh-t" id="heroTitle">本店服务</div>
+      <div class="mh-d" id="heroDesc">浏览下方服务清单，需要帮助时点右下角的 AI 服务机器人，可语音对话哦～</div>
+    </div>
+    <div class="sec-title">热门推荐</div>
+    <div class="hl-grid" id="hlGrid"></div>
+    <div class="sec-title">完整服务清单</div>
+    <div class="menu-list" id="menuList"></div>
+    <div class="sec-title">快速服务</div>
+    <div class="act-grid" id="actGrid"></div>
+  </div>
 
-  <div id="inputRow">
-    <input id="userInput" type="text" placeholder="输入你的需求…" autocomplete="off">
-    <button id="sendBtn">发送</button>
+  <!-- AI 服务机器人 悬浮按钮 -->
+  <button class="ai-fab" id="aiFab" onclick="openChat()" style="display:none;">
+    🤖<span class="dot"></span>
+  </button>
+  <div class="ai-tip" id="aiTip" style="display:none;">点我，语音找我帮忙～</div>
+
+  <!-- 聊天抽屉 -->
+  <div id="chatMask" onclick="closeChat()"></div>
+  <div id="chatDrawer">
+    <div class="drawer-head">
+      <div class="grip"></div>
+      <div class="av">AI</div>
+      <div class="dn" id="drawerName">AI智能体服务员</div>
+      <button class="close" onclick="closeChat()">✕</button>
+    </div>
+    <div id="chat"></div>
+    <div id="quickBar"></div>
+    <div id="inputRow">
+      <input id="userInput" type="text" placeholder="输入你的需求…" autocomplete="off">
+      <button id="micBtn" title="语音输入">🎤</button>
+      <button id="sendBtn">发送</button>
+    </div>
   </div>
 
   <div id="modalMask" onclick="if(event.target===this)closeBook()">
@@ -280,6 +381,8 @@
     <button class="copy-btn" onclick="copyCode()">📋 复制编号</button>
     <div class="copy-ok" id="copyOk"></div>
     <button class="back-survey" id="backBtn" onclick="backToSurvey()">返回问卷，继续填写 →</button>
+    <button class="try-other" id="tryOtherBtn" onclick="tryOtherCond()">🔄 体验其他挡位</button>
+  </div>
 
     <div id="resBox">
       <div class="rl">调研员工具（受访者请勿操作）</div>
@@ -333,24 +436,32 @@ const LOG_KEY = 'demoLog';
 const SCEN = {
   canyin:{code:'CY', icon:'🍜', name:'餐饮', role:'AI智能体服务员', price:'8元/桌', fee:'本次AI智能服务费8元/桌已计入账单',
     menu:'今日菜单：招牌红烧肉 38元｜清蒸鲈鱼 48元｜宫保鸡丁 32元(微辣)｜蒜蓉西兰花 18元｜酸辣土豆丝 15元(辣)｜麻婆豆腐 22元(辣)｜糖醋排骨 35元｜白切鸡 28元｜清炒时蔬 12元｜蒜蓉粉丝蒸扇贝 58元｜水煮鱼 58元(辣)｜番茄蛋花汤 12元。本店招牌：招牌红烧肉、清蒸鲈鱼、蒜蓉粉丝蒸扇贝。',
+    highlights:[{n:'招牌红烧肉',p:'38元',t:'肥而不腻 招牌必点'},{n:'清蒸鲈鱼',p:'48元',t:'鲜嫩不辣 老少皆宜'},{n:'蒜蓉粉丝蒸扇贝',p:'58元',t:'鲜香下饭'}],
+    actions:[{l:'🍽 我要点菜',t:'我想点菜'},{l:'🌶 不吃辣',t:'我不能吃辣，推荐几个菜'},{l:'📝 预订桌位',book:true}],
     tasks:['① 说出偏好/需求','② 获得推荐','③ 完成下单'],
     ctx:'你是一家餐厅的AI智能体服务员。帮顾客推荐菜品、记住他的口味忌口、协助点单加菜。',
-    greet:{warm:'您好呀～欢迎光临！今天想吃点什么？有忌口或偏好也可以告诉我哦！', mech:'您好。我是AI智能体服务员。请说明您的用餐需求。'}},
+    greet:{warm:'您好呀～欢迎光临！😊 今天想吃点什么？有忌口或偏好也可以告诉我哦！', mech:'您好。我是AI智能体服务员。请说明您的用餐需求。'}},
   chaoshi:{code:'CS', icon:'🛒', name:'商超', role:'AI智能体导购员', price:'5元/次', fee:'本次AI智能服务费5元/次已计入账单',
     menu:'分区导览：果蔬区(A区·入口左侧)｜肉禽蛋区(B区)｜乳制品区(C区冷藏柜)｜零食饮料区(D区3-5排)｜日用洗护区(E区6-8排)｜粮油调味区(F区9-10排)。今日促销：无糖酸奶 第2件半价｜抽纸3连包 19.9元｜鸡蛋30枚 21.9元｜洗衣液2kg 29.9元｜薯片 买二送一。比价参考(纯牛奶250ml×12盒)：蒙牛 39.9元/箱｜伊利 42元/箱｜牧场之光 33.9元/箱(最划算)。',
+    highlights:[{n:'无糖酸奶',p:'第2件半价',t:'冷藏柜 C区'},{n:'抽纸3连包',p:'19.9元',t:'家庭囤货首选'},{n:'鸡蛋30枚',p:'21.9元',t:'肉禽蛋区 B区'}],
+    actions:[{l:'🗺 找商品位置',t:'洗衣液在哪个区'},{l:'💰 帮我比价',t:'纯牛奶哪个牌子更划算'},{l:'📝 预约配送',book:true}],
     tasks:['① 说出要找的商品','② 获得推荐/比价','③ 完成结账'],
     ctx:'你是一家大型超市的AI智能体导购员。帮顾客找商品位置（告诉他在哪个区哪排货架）、比价、介绍促销。',
-    greet:{warm:'您好呀～欢迎光临！想找什么商品告诉我，我帮您找位置还能比价！', mech:'您好。我是AI智能体导购员。请说明要找的商品。'}},
+    greet:{warm:'您好呀～欢迎光临！😊 想找什么商品告诉我，我帮您找位置还能比价！', mech:'您好。我是AI智能体导购员。请说明要找的商品。'}},
   jiudian:{code:'JD', icon:'🏨', name:'酒店', role:'AI智能体客房管家', price:'30元/晚', fee:'本次AI管家服务费30元/晚已计入房费',
     menu:'房价：大床房 328元/晚｜双床房 358元/晚｜亲子房 428元/晚｜行政套房 588元/晚（均含双早）。免费送物(机器人5-10分钟送达)：矿泉水、浴巾、牙具、拖鞋、手机充电器。周边美食：张记川菜馆(步行5分钟·人均60元)｜潮汕牛肉火锅(步行8分钟·人均90元)｜星巴克(步行3分钟)｜24小时便利店(酒店楼下)。续住政策：当天房价9折，每日16点前可办理。',
+    highlights:[{n:'大床房',p:'328元/晚',t:'含双早 舒适宽敞'},{n:'机器人送物',p:'免费',t:'5-10分钟送达'},{n:'周边美食',p:'步行可达',t:'川菜/火锅/咖啡'}],
+    actions:[{l:'🧴 送物到房',t:'请送两瓶矿泉水到房间'},{l:'🍜 周边推荐',t:'推荐一下酒店周边的美食'},{l:'🛏 办理续住',book:true}],
     tasks:['① 提出服务需求','② 获得安排/推荐','③ 完成办理'],
     ctx:'你是一家酒店的AI智能体客房管家。帮顾客安排机器人送物上门、推荐周边餐饮、办理续住。',
-    greet:{warm:'晚上好呀～欢迎入住！需要送东西到房间，或想问周边好吃的，随时跟我说！', mech:'您好。我是AI智能体客房管家。请说明服务需求。'}},
+    greet:{warm:'晚上好呀～欢迎入住！😊 需要送东西到房间，或想问周边好吃的，随时跟我说！', mech:'您好。我是AI智能体客房管家。请说明服务需求。'}},
   lingshou:{code:'LS', icon:'🏬', name:'零售', role:'AI智能体导购顾问', price:'15元/次', fee:'本次AI导购服务费15元/次已计入账单',
     menu:'热卖单品：连帽卫衣 199元(S-XL)｜直筒牛仔裤 259元(28-36码)｜白衬衫 159元(S-L)｜针织开衫 229元(均码)｜A字半裙 189元(S-L)｜风衣外套 399元(M/L)。当前库存：卫衣L码仅剩3件｜牛仔裤32码缺货｜风衣M码剩5件｜其余尺码充足。会员折扣：普通会员95折｜银卡9折｜金卡85折｜全场满500减50。',
+    highlights:[{n:'连帽卫衣',p:'199元',t:'S-XL L码仅剩3件'},{n:'直筒牛仔裤',p:'259元',t:'28-36码 32码缺货'},{n:'风衣外套',p:'399元',t:'M/L 经典百搭'}],
+    actions:[{l:'📏 查库存',t:'卫衣L码还有吗'},{l:'👗 帮我搭配',t:'帮我搭配一套穿搭'},{l:'📝 预约试穿',book:true}],
     tasks:['① 说出尺码/风格需求','② 获得搭配推荐','③ 完成结账'],
     ctx:'你是一家服装零售店的AI智能体导购顾问。帮顾客查尺码库存、做搭配推荐、介绍会员折扣。',
-    greet:{warm:'欢迎光临呀～想找什么尺码、或需要我帮您搭配一套？跟我说就行！', mech:'您好。我是AI智能体导购顾问。请说明需求。'}}
+    greet:{warm:'欢迎光临呀～😊 想找什么尺码、或需要我帮您搭配一套？跟我说就行！', mech:'您好。我是AI智能体导购顾问。请说明需求。'}}
 };
 
 const CONDS = {
@@ -404,8 +515,8 @@ const BOOK_FORMS = {
 
 function buildSysPrompt(s, c){
   const anth = c.anth==='warm'
-    ? '语气热情亲切、有同理心，适度使用语气词（呀、呢、哦），让顾客感到被关心。'
-    : '语气简短、正式、不带感情色彩，像机器播报，不用语气词，不寒暄。';
+    ? '语气热情亲切、有同理心，像朋友一样会闲聊、会夸人、会幽默，适度用语气词（呀、呢、哦、啦）和1-2个emoji，说话有细节有温度，不像念稿子。顾客闲聊或问无关问题（天气、心情、玩笑、日常话题等）时，先自然风趣地接一两句，再轻松带回服务话题。'
+    : '语气简短、正式、不带感情色彩，像机器播报，不用语气词和emoji，不寒暄；顾客问无关问题时，简短作答后直接引导回服务话题。';
   const trans = c.trans==='full'
     ? '每次推荐或服务必须给出完整推理：用"①…②…③…"列出理由（涉及顾客偏好、商品属性、其他顾客数据），此模式下回复可到120字。'
     : c.trans==='simple'
@@ -419,39 +530,91 @@ function buildSysPrompt(s, c){
     : c.auto==='compare'
     ? '遇到选择时给出2个具体选项并比较优劣，让顾客自己选，你不替顾客做决定。'
     : '只给建议和推荐，由顾客自己决定和确认；绝不主动说"已下单/已办理"，必须等顾客明确说"下单/确认/就这个"后才确认。';
-  return s.ctx + '\n'
+  return '你位于顾客浏览本店服务菜单的页面，作为一旁待命的AI服务机器人。顾客先看菜单，需要时会点你呼叫。\n'
+    + s.ctx + '\n'
     + '【本店资料】以下为本店全部商品与服务信息，必须严格按资料回答，不得编造、增删或更改：\n' + s.menu + '\n'
     + '规则：\n'
     + '1. 全程中文口语化，像真人店员一样对话。平时每次回复不超过60字，但要有实质内容（口味、位置、价格等细节），不敷衍。\n'
     + '2. 顾客索要菜单、价目表、促销清单、分区导览、库存等列表信息时：按【本店资料】分行列出对应的完整条目（每行"名称 价格"或"名称 位置"），此时可超过60字。\n'
     + '3. 顾客问"推荐/招牌/哪个好"时：只从资料中挑2-4项，每项附一句理由，绝不把整个列表当作推荐。顾客问"还有别的吗"，如实告知资料内还有哪些（"菜单上一共就是这些"），不得编造资料之外的商品。\n'
-    + '4. 拟人化要求：' + anth + '\n'
-    + '5. 透明度要求：' + trans + '\n'
-    + '6. 准确率要求：' + acc + '\n'
-    + '7. 自主权要求：' + auto + '\n'
-    + '8. 主动询问并记住顾客的偏好，在后续推荐中体现"记住了"。\n'
-    + '9. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
-    + '10. 仅当顾客明确说出"下单/结账/就这些/确认办理"等完成意图、且你已为其完成下单/结账/办理后，才告知顾客"' + s.fee + '"，道别并在回复末尾单独输出[END]；只是看菜单、求推荐、咨询时绝不输出[END]。\n'
-    + '11. 不脱离角色；不讨论你是AI模型或本实验；顾客问无关问题时礼貌引导回服务话题；不索要真实姓名电话等隐私信息。';
+    + '4. 发挥空间：推荐的理由、闲聊、比喻、小贴士等可以即兴发挥，像真人一样有个性和幽默感；但商品名称、价格、库存、位置、政策等事实必须严格出自资料。\n'
+    + '5. 拟人化要求：' + anth + '\n'
+    + '6. 透明度要求：' + trans + '\n'
+    + '7. 准确率要求：' + acc + '\n'
+    + '8. 自主权要求：' + auto + '\n'
+    + '9. 主动询问并记住顾客的偏好，在后续推荐中体现"记住了"。\n'
+    + '10. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
+    + '11. 仅当顾客明确说出"下单/结账/就这些/确认办理"等完成意图、且你已为其完成下单/结账/办理后，才告知顾客"' + s.fee + '"，道别并在回复末尾单独输出[END]；只是看菜单、求推荐、咨询时绝不输出[END]。\n'
+    + '12. 不脱离角色；不讨论你是AI模型或本实验；不索要真实姓名电话等隐私信息。\n'
+    + '13. 界面控制：当顾客说"看菜单/回到菜单/菜单界面/我想看菜单/返回菜单"等想回到服务菜单时，先回复一句引导语（如"好的，这就为您打开菜单～"），然后在回复末尾单独一行输出标记 [UI:MENU]，系统会自动展示菜单界面。';
 }
 
 /* ============ 状态 ============ */
 let scenKey=null, scen=null, cond=null, condKey=null, messages=[], turns=0, waiting=false, code='', saved=false;
 
 function show(id){
-  /* 类控制的三页用 .on 切换，其余用内联 display，避免优先级冲突 */
-  ['home','condPage','introPage'].forEach(x=>document.getElementById(x).classList.remove('on'));
-  ['chat','inputRow','quickBar','endBox','taskBar'].forEach(x=>{
-    document.getElementById(x).style.display='none';
+  ['home','condPage','introPage','menuPage'].forEach(x=>{
+    const el=document.getElementById(x); if(el) el.classList.remove('on');
   });
-  if(id==='chat'){
-    document.getElementById('chat').style.display='block';
-    document.getElementById('inputRow').style.display='flex';
-    document.getElementById('quickBar').style.display='block';
-    document.getElementById('taskBar').style.display='flex';
-  }
-  else if(id==='endBox'){ document.getElementById('endBox').style.display='flex'; }
+  ['taskBar','endBox'].forEach(x=>{ const el=document.getElementById(x); if(el) el.style.display='none'; });
+  if(id==='endBox'){ document.getElementById('endBox').style.display='flex'; }
+  else if(id==='menuPage'){ document.getElementById('taskBar').style.display='flex'; document.getElementById('menuPage').classList.add('on'); }
   else document.getElementById(id).classList.add('on');
+}
+
+/* ============ 服务菜单渲染 ============ */
+function renderMenu(){
+  document.getElementById('heroTitle').textContent = scen.icon+' '+scen.name+' · 本店服务';
+  const hl = document.getElementById('hlGrid'); hl.innerHTML='';
+  scen.highlights.forEach(h=>{
+    const c = document.createElement('div');
+    c.className='hl-card';
+    c.innerHTML = '<div class="hn">'+h.n+'</div><div class="hp">'+h.p+'</div><div class="ht">'+h.t+'</div>';
+    c.onclick = ()=>{ openChat(); send('推荐一下'+h.n+'，说说它的特点'); };
+    hl.appendChild(c);
+  });
+  const ml = document.getElementById('menuList'); ml.innerHTML='';
+  scen.menu.split('。').forEach(seg=>{
+    seg = seg.trim();
+    if(!seg) return;
+    const parts = seg.split('：');
+    const head = parts[0];
+    const body = parts.slice(1).join('：').split('｜');
+    const line = document.createElement('div');
+    line.className='ml-line';
+    line.innerHTML = '<b>'+head+'：</b>'+body.join('、');
+    ml.appendChild(line);
+  });
+  const ag = document.getElementById('actGrid'); ag.innerHTML='';
+  scen.actions.forEach(a=>{
+    const b = document.createElement('button');
+    b.className='act-btn';
+    b.textContent = a.l;
+    b.onclick = ()=>{
+      if(a.book){ openChat(); openBook(); }
+      else { openChat(); send(a.t); }
+    };
+    ag.appendChild(b);
+  });
+}
+
+/* ============ 聊天抽屉 ============ */
+let chatOpen=false;
+function openChat(){
+  if(chatOpen) return;
+  chatOpen=true;
+  document.getElementById('chatMask').classList.add('on');
+  document.getElementById('chatDrawer').classList.add('open');
+  document.getElementById('chat').style.display='block';
+  document.getElementById('inputRow').style.display='flex';
+  document.getElementById('quickBar').style.display='block';
+  document.getElementById('aiTip').style.display='none';
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+}
+function closeChat(){
+  chatOpen=false;
+  document.getElementById('chatMask').classList.remove('on');
+  document.getElementById('chatDrawer').classList.remove('open');
 }
 
 function randCond(){ return 'D'+(1+Math.floor(Math.random()*4)); }
@@ -460,8 +623,6 @@ function boot(){
   if(P_ADMIN){ showAdmin(); return; }
   if(P_S && SCEN[P_S]){
     scenKey = P_S; scen = SCEN[P_S];
-    if(P_MANUAL){ show('condPage'); setTop(); return; }
-    condKey = CONDS[P_C] ? P_C : randCond();
     showIntro();
   } else {
     show('home');
@@ -475,8 +636,6 @@ function setTop(){
 
 function pickScen(key){
   scenKey = key; scen = SCEN[key];
-  if(P_MANUAL){ show('condPage'); setTop(); return; }
-  condKey = randCond();
   showIntro();
 }
 function showIntro(){
@@ -486,12 +645,16 @@ function showIntro(){
   show('introPage');
   document.getElementById('statusText').textContent = scen.name+' · 等待开始';
 }
-function enterChat(){ startChat(); }
+function enterChat(){ show('condPage'); }
 
 function goHome(){
   closeBook();
+  stopVoice();
+  closeChat();
   show('home');
   document.getElementById('endBtn').style.display='none';
+  document.getElementById('aiFab').style.display='none';
+  document.getElementById('aiTip').style.display='none';
   document.getElementById('roleName').textContent='AI智能体服务体验';
   document.getElementById('statusText').textContent='请选择体验场景';
 }
@@ -507,15 +670,27 @@ function startChat(manualKey){
   saved = false;
   messages = [{role:'system', content:buildSysPrompt(scen, cond)}];
   turns = 0; waiting = false;
-  show('chat');
+  /* 进入服务菜单主界面，AI 作为一旁待命的服务机器人 */
+  renderMenu();
   renderTasks();
   renderChips();
+  show('menuPage');
+  document.getElementById('heroTitle').textContent = scen.icon+' '+scen.name+' · '+condKey+'（'+cond.cname+'）';
+  document.getElementById('heroDesc').innerHTML = '当前体验：<b>'+condKey+' '+cond.cname+'</b>　|　AI 角色：'+scen.role+'<br>浏览下方服务清单，需帮助时点右下角 🤖 呼叫 AI（可语音）。';
+  document.getElementById('drawerName').textContent = scen.role;
   document.getElementById('endBtn').style.display='block';
   document.getElementById('chat').innerHTML='';
-  document.getElementById('statusText').textContent = scen.name+' · 体验中';
+  document.getElementById('statusText').textContent = scen.name+' · '+condKey+' · 浏览菜单中';
+  setupVoice();
   const greet = scen.greet[cond.anth];
   addBubble('bot', greet);
   messages.push({role:'assistant', content:greet});
+  const fab = document.getElementById('aiFab');
+  fab.style.display='flex';
+  const tip = document.getElementById('aiTip');
+  tip.textContent = cond.anth==='warm' ? '您好～需要帮忙随时叫我！😊' : '您好。需要服务请点击。';
+  tip.style.display='block';
+  setTimeout(()=>{ if(!chatOpen) tip.style.display='none'; }, 5000);
   const inp = document.getElementById('userInput');
   inp.value='';
   inp.onkeydown = e=>{ if(e.key==='Enter') send(); };
@@ -547,8 +722,9 @@ function renderChips(){
 }
 function onChip(q){
   if(waiting) return;
-  if(q.book){ openBook(); return; }
-  send(q.text);
+  if(q.book){ openChat(); openBook(); return; }
+  openChat();
+  setTimeout(()=>send(q.text), 320);
 }
 function openBook(){
   const f = BOOK_FORMS[scenKey];
@@ -616,11 +792,17 @@ async function send(preset){
     const j = await r.json();
     let reply = (j.choices && j.choices[0] && j.choices[0].message.content) || '（无回复）';
     const isEnd = reply.includes('[END]') && reply.includes('服务费');
-    reply = reply.replace('[END]','').trim();
+    let uiMenu = reply.includes('[UI:MENU]');
+    reply = reply.replace('[UI:MENU]','').replace('[END]','').trim();
     t.querySelector('.bubble').textContent = reply;
     messages.push({role:'assistant', content:reply});
     chat.scrollTop = chat.scrollHeight;
+    speak(reply);
     if(isEnd){ waiting=false; setTimeout(endChat, 1200); return; }
+    if(uiMenu){
+      document.getElementById('menuPage').scrollTop = 0;
+      setTimeout(closeChat, 700);
+    }
   }catch(e){
     t.querySelector('.bubble').textContent = '（网络异常，请点下方按钮重试）';
     sysMsg('⚠️ 调用失败：'+e.message+'。请检查网络后重发；若一直失败请告知调研员。');
@@ -643,6 +825,7 @@ function sysMsg(text){ addBubble('sys', text); }
 /* ============ 结束 + 记录存档 ============ */
 function endChat(){
   closeBook();
+  stopVoice();
   if(!code){ code = makeCode(); sessionStorage.setItem('demoCode', code); }
   tickTask(1); tickTask(2); tickTask(3);
   saveRecord();
@@ -653,8 +836,28 @@ function endChat(){
   document.getElementById('resBox').style.display = (P_MANUAL || P_ADMIN || !P_S) ? 'block' : 'none';
   show('endBox');
   document.getElementById('endBtn').style.display='none';
+  document.getElementById('aiFab').style.display='none';
+  document.getElementById('aiTip').style.display='none';
+  closeChat();
   document.getElementById('roleName').textContent='AI智能体服务体验';
   document.getElementById('statusText').textContent='体验已结束';
+}
+
+/* 体验完一个挡位后，返回重新体验其他挡位（清除原编号，换档位） */
+function tryOtherCond(){
+  closeBook();
+  stopVoice();
+  closeChat();
+  sessionStorage.removeItem('demoSig');
+  sessionStorage.removeItem('demoCode');
+  code = null;
+  document.getElementById('endBtn').style.display='none';
+  document.getElementById('aiFab').style.display='none';
+  document.getElementById('aiTip').style.display='none';
+  document.getElementById('roleName').textContent='AI智能体服务体验';
+  document.getElementById('statusText').textContent='请选择体验场景';
+  if(P_MANUAL){ show('condPage'); }
+  else { show('introPage'); }
 }
 
 function getLog(){
@@ -746,6 +949,79 @@ function backToSurvey(){
   if(u.indexOf('{CODE}') !== -1){ u = u.split('{CODE}').join(encodeURIComponent(code)); }
   else { u += (u.indexOf('?') !== -1 ? '&' : '?') + 'demo_code=' + encodeURIComponent(code); }
   location.href = u;
+}
+
+/* ============ 语音对话（语音识别 + 播报，不支持时自动降级） ============ */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const TTS_OK = 'speechSynthesis' in window;
+let recog = null, recording = false, ttsOn = true, voiceReady = false;
+
+function setupVoice(){
+  if(voiceReady) return; voiceReady = true;
+  const mb = document.getElementById('micBtn'), tb = document.getElementById('ttsBtn');
+  if(TTS_OK){
+    tb.style.display = 'block';
+    tb.onclick = ()=>{
+      ttsOn = !ttsOn;
+      tb.textContent = ttsOn ? '🔊' : '🔇';
+      if(!ttsOn) speechSynthesis.cancel();
+    };
+  } else {
+    document.getElementById('endBtn').style.marginLeft = 'auto';
+  }
+  if(!SR){ mb.style.display = 'none'; return; }
+  mb.onclick = toggleRec;
+}
+function toggleRec(){
+  if(waiting || !SR) return;
+  if(recording){ try{ recog.stop(); }catch(e){} return; }
+  const inp = document.getElementById('userInput');
+  recog = new SR();
+  recog.lang = 'zh-CN';
+  recog.interimResults = true;
+  recog.continuous = false;
+  recog.onstart = ()=>{
+    recording = true;
+    document.getElementById('micBtn').classList.add('rec');
+    inp.placeholder = '正在聆听，请说话…';
+  };
+  recog.onresult = e=>{
+    let txt = '';
+    for(let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+    inp.value = txt;
+    if(e.results[e.results.length-1].isFinal){
+      const said = txt.trim();
+      inp.value = '';
+      if(said) send(said);
+    }
+  };
+  recog.onerror = e=>{
+    if(e.error === 'not-allowed' || e.error === 'service-not-allowed')
+      sysMsg('⚠️ 麦克风不可用或授权被拒绝，请改用键盘输入。');
+  };
+  recog.onend = ()=>{
+    recording = false;
+    document.getElementById('micBtn').classList.remove('rec');
+    inp.placeholder = '输入你的需求…';
+  };
+  try{ recog.start(); }catch(e){ sysMsg('⚠️ 当前浏览器不支持语音输入，请用键盘打字。'); }
+}
+function speak(text){
+  if(!ttsOn || !TTS_OK || !text) return;
+  const clean = text
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/[①②③④⑤⑥⑦⑧⑨⑩]/g, '')
+    .replace(/[｜|]/g, '，');
+  if(!clean.trim()) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang = 'zh-CN';
+  u.rate = 1.08;
+  speechSynthesis.speak(u);
+}
+function stopVoice(){
+  if(TTS_OK) speechSynthesis.cancel();
+  if(recording && recog){ try{ recog.stop(); }catch(e){} }
 }
 
 boot();
