@@ -7,42 +7,42 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { font-family:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei','Segoe UI',sans-serif; color:#1e293b;
-    background:linear-gradient(160deg,#ecfdf5 0%,#f0f9ff 45%,#f5f3ff 100%); background-attachment:fixed; }
+    background:linear-gradient(160deg,#fff7ed 0%,#fffbeb 45%,#fdf2f8 100%); background-attachment:fixed; }
   #app { max-width:520px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
   /* 顶栏 */
-  .topbar { background:linear-gradient(135deg,#047857 0%,#059669 55%,#10b981 100%); color:white; padding:15px 16px;
-    display:flex; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(5,150,105,.28); position:relative; z-index:5; }
+  .topbar { background:linear-gradient(135deg,#c2410c 0%,#ea580c 55%,#f97316 100%); color:white; padding:15px 16px;
+    display:flex; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(234,88,12,.28); position:relative; z-index:5; }
   .avatar { width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.95); display:flex; align-items:center;
-    justify-content:center; font-size:13px; font-weight:800; color:#059669; flex-shrink:0;
+    justify-content:center; font-size:13px; font-weight:800; color:#ea580c; flex-shrink:0;
     box-shadow:0 0 0 3px rgba(255,255,255,.25), 0 2px 6px rgba(0,0,0,.12); }
   .topbar .name { font-weight:700; font-size:16px; letter-spacing:.3px; }
   .topbar .status { font-size:11.5px; opacity:.92; display:flex; align-items:center; gap:5px; margin-top:2px; }
-  .topbar .status::before { content:''; width:7px; height:7px; border-radius:50%; background:#a7f3d0; flex-shrink:0;
-    box-shadow:0 0 0 0 rgba(167,243,208,.7); animation:pulse 2s infinite; }
-  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(167,243,208,.6);} 70%{box-shadow:0 0 0 7px rgba(167,243,208,0);} 100%{box-shadow:0 0 0 0 rgba(167,243,208,0);} }
+  .topbar .status::before { content:''; width:7px; height:7px; border-radius:50%; background:#fed7aa; flex-shrink:0;
+    box-shadow:0 0 0 0 rgba(253,215,170,.7); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(253,215,170,.6);} 70%{box-shadow:0 0 0 7px rgba(253,215,170,0);} 100%{box-shadow:0 0 0 0 rgba(253,215,170,0);} }
   .end-btn { margin-left:auto; background:rgba(255,255,255,.16); color:white; border:1px solid rgba(255,255,255,.45);
     border-radius:20px; padding:6px 14px; font-size:12px; cursor:pointer; display:none; transition:background .2s; }
   .end-btn:active { background:rgba(255,255,255,.3); }
 
   /* 任务引导条 */
-  #taskBar { display:none; background:rgba(236,253,245,.92); border-bottom:1px solid #a7f3d0; padding:8px 12px; gap:6px; flex-wrap:wrap; }
-  .task-chip { font-size:11px; padding:4px 10px; border-radius:12px; background:rgba(255,255,255,.9); border:1px solid #a7f3d0;
+  #taskBar { display:none; background:rgba(255,247,237,.92); border-bottom:1px solid #fed7aa; padding:8px 12px; gap:6px; flex-wrap:wrap; }
+  .task-chip { font-size:11px; padding:4px 10px; border-radius:12px; background:rgba(255,255,255,.9); border:1px solid #fed7aa;
     color:#64748b; transition:all .3s; }
-  .task-chip.done { background:linear-gradient(135deg,#059669,#10b981); color:white; border-color:#10b981;
-    box-shadow:0 2px 6px rgba(16,185,129,.3); }
+  .task-chip.done { background:linear-gradient(135deg,#ea580c,#f97316); color:white; border-color:#f97316;
+    box-shadow:0 2px 6px rgba(249,115,22,.3); }
 
   /* 页面通用 */
   #home, #condPage, #introPage { flex:1; display:none; flex-direction:column; justify-content:center; padding:28px 20px; }
   #home.on, #condPage.on, #introPage.on { display:flex; animation:pageIn .35s ease; }
   @keyframes pageIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
   .page-h1 { font-size:24px; text-align:center; margin-bottom:8px;
-    background:linear-gradient(120deg,#047857,#059669); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    background:linear-gradient(120deg,#c2410c,#ea580c); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .page-sub { font-size:13px; text-align:center; color:#64748b; margin-bottom:26px; }
   .scen-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .scen-card { background:rgba(255,255,255,.9); border:1.5px solid #e2e8f0; border-radius:20px; padding:24px 12px;
     text-align:center; cursor:pointer; box-shadow:0 3px 10px rgba(15,23,42,.05); transition:transform .15s, box-shadow .25s, border-color .25s; }
-  .scen-card:active { transform:scale(.96); border-color:#10b981; box-shadow:0 6px 18px rgba(16,185,129,.22); }
+  .scen-card:active { transform:scale(.96); border-color:#f97316; box-shadow:0 6px 18px rgba(249,115,22,.22); }
   .scen-card .icon { font-size:36px; margin-bottom:8px; }
   .scen-card .sname { font-size:16px; font-weight:700; color:#1e293b; }
   .scen-card .srole { font-size:11.5px; color:#64748b; margin-top:4px; }
@@ -57,29 +57,29 @@
 
   /* 受访者引导页 */
   .intro-card { background:rgba(255,255,255,.94); border-radius:24px; padding:30px 24px 26px; position:relative; overflow:hidden;
-    box-shadow:0 12px 32px rgba(5,150,105,.12), 0 2px 8px rgba(15,23,42,.05); }
+    box-shadow:0 12px 32px rgba(234,88,12,.12), 0 2px 8px rgba(15,23,42,.05); }
   .intro-card::before { content:''; position:absolute; top:0; left:0; right:0; height:5px;
-    background:linear-gradient(90deg,#10b981,#34d399,#a78bfa); }
+    background:linear-gradient(90deg,#f97316,#fdba74,#a78bfa); }
   .intro-card .logo { width:84px; height:84px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center;
-    font-size:42px; border-radius:50%; background:radial-gradient(circle at 30% 30%,#ffffff,#d1fae5);
-    box-shadow:0 6px 16px rgba(16,185,129,.25), inset 0 -3px 8px rgba(16,185,129,.12); }
+    font-size:42px; border-radius:50%; background:radial-gradient(circle at 30% 30%,#ffffff,#ffedd5);
+    box-shadow:0 6px 16px rgba(249,115,22,.25), inset 0 -3px 8px rgba(249,115,22,.12); }
   .intro-card h2 { font-size:20px; text-align:center; margin-bottom:8px;
-    background:linear-gradient(120deg,#047857,#10b981); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    background:linear-gradient(120deg,#c2410c,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .intro-card .scene-tag { display:table; margin:0 auto 18px; text-align:center; font-size:12.5px; color:#7c3aed; font-weight:700;
     background:#f5f3ff; border-radius:20px; padding:5px 14px; }
   .intro-card ol { padding-left:20px; }
   .intro-card li { font-size:13.5px; line-height:1.8; margin-bottom:10px; color:#334155; }
-  .intro-card li b { color:#047857; }
+  .intro-card li b { color:#c2410c; }
   .intro-go { width:100%; margin-top:18px; padding:16px; border:none; border-radius:14px; font-size:16px; font-weight:700;
-    color:white; background:linear-gradient(135deg,#059669,#10b981); box-shadow:0 6px 16px rgba(16,185,129,.35);
+    color:white; background:linear-gradient(135deg,#ea580c,#f97316); box-shadow:0 6px 16px rgba(249,115,22,.35);
     cursor:pointer; transition:transform .15s, box-shadow .2s; letter-spacing:.5px; }
-  .intro-go:active { transform:scale(.98); box-shadow:0 2px 8px rgba(16,185,129,.3); }
+  .intro-go:active { transform:scale(.98); box-shadow:0 2px 8px rgba(249,115,22,.3); }
   .intro-fine { margin-top:14px; text-align:center; font-size:11.5px; color:#94a3b8; }
 
   /* 聊天区 */
   #chat { flex:1; overflow-y:auto; padding:16px 12px; display:none; scroll-behavior:smooth; }
   #chat::-webkit-scrollbar { width:4px; }
-  #chat::-webkit-scrollbar-thumb { background:rgba(5,150,105,.25); border-radius:4px; }
+  #chat::-webkit-scrollbar-thumb { background:rgba(249,115,22,.25); border-radius:4px; }
   .msg { display:flex; margin-bottom:12px; animation:msgIn .3s ease; }
   @keyframes msgIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
   .msg.bot { justify-content:flex-start; }
@@ -89,11 +89,11 @@
     white-space:pre-wrap; word-break:break-word; }
   .msg.bot .bubble { background:rgba(255,255,255,.95); border:1px solid #e8edf3; border-top-left-radius:6px;
     box-shadow:0 2px 6px rgba(15,23,42,.06); }
-  .msg.user .bubble { background:linear-gradient(135deg,#059669,#10b981); color:white; border-top-right-radius:6px;
-    box-shadow:0 3px 8px rgba(16,185,129,.3); }
+  .msg.user .bubble { background:linear-gradient(135deg,#ea580c,#f97316); color:white; border-top-right-radius:6px;
+    box-shadow:0 3px 8px rgba(249,115,22,.3); }
   .msg.sys .bubble { background:#fffbeb; border:1px solid #fde68a; color:#92400e; font-size:12px; max-width:92%; border-radius:12px; }
   .typing { display:inline-flex; gap:4px; padding:4px 2px; }
-  .typing i { width:7px; height:7px; border-radius:50%; background:#34d399; animation:blink 1s infinite; }
+  .typing i { width:7px; height:7px; border-radius:50%; background:#fb923c; animation:blink 1s infinite; }
   .typing i:nth-child(2){ animation-delay:.2s; } .typing i:nth-child(3){ animation-delay:.4s; }
   @keyframes blink { 0%,100%{opacity:.3; transform:translateY(0);} 50%{opacity:1; transform:translateY(-2px);} }
 
@@ -102,9 +102,9 @@
     background:rgba(255,255,255,.92); border-top:1px solid #e2e8f0; box-shadow:0 -4px 14px rgba(15,23,42,.05); }
   #userInput { flex:1; padding:12px 16px; border:2px solid #e2e8f0; border-radius:24px; font-size:15px; outline:none;
     font-family:inherit; background:#f8fafc; transition:border-color .2s, background .2s, box-shadow .2s; }
-  #userInput:focus { border-color:#10b981; background:white; box-shadow:0 0 0 4px rgba(16,185,129,.12); }
-  #sendBtn { padding:0 22px; background:linear-gradient(135deg,#059669,#10b981); color:white; border:none; border-radius:24px;
-    font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,.35); transition:transform .15s, opacity .2s; }
+  #userInput:focus { border-color:#f97316; background:white; box-shadow:0 0 0 4px rgba(249,115,22,.12); }
+  #sendBtn { padding:0 22px; background:linear-gradient(135deg,#ea580c,#f97316); color:white; border:none; border-radius:24px;
+    font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(249,115,22,.35); transition:transform .15s, opacity .2s; }
   #sendBtn:active { transform:scale(.95); }
   #sendBtn:disabled { background:#cbd5e1; box-shadow:none; }
 
@@ -112,11 +112,11 @@
   #quickBar { display:none; padding:9px 10px; background:rgba(255,255,255,.85); border-top:1px solid #edf2f7;
     overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
   #quickBar::-webkit-scrollbar { display:none; }
-  .qchip { display:inline-block; padding:8px 15px; margin-right:8px; background:#ecfdf5; border:1.5px solid #a7f3d0;
-    color:#047857; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; flex-shrink:0; transition:transform .12s, background .2s; }
-  .qchip:active { transform:scale(.94); background:#d1fae5; }
-  .qchip.book { border-color:#fdba74; color:#ea580c; border-style:dashed; background:#fff7ed; }
-  .qchip.book:active { background:#ffedd5; }
+  .qchip { display:inline-block; padding:8px 15px; margin-right:8px; background:#fff7ed; border:1.5px solid #fdba74;
+    color:#c2410c; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; flex-shrink:0; transition:transform .12s, background .2s; }
+  .qchip:active { transform:scale(.94); background:#ffedd5; }
+  .qchip.book { border-color:#fca5a5; color:#dc2626; border-style:dashed; background:#fef2f2; }
+  .qchip.book:active { background:#fee2e2; }
 
   /* 弹窗 */
   #modalMask { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:50; align-items:center;
@@ -125,18 +125,18 @@
   .modal { background:white; border-radius:20px; padding:22px 20px 16px; width:100%; max-width:400px;
     box-shadow:0 20px 50px rgba(15,23,42,.25); animation:modalUp .28s cubic-bezier(.34,1.4,.64,1); }
   @keyframes modalUp { from{opacity:0; transform:translateY(24px) scale(.97);} to{opacity:1; transform:none;} }
-  .modal h3 { font-size:17px; color:#047857; margin-bottom:4px; }
+  .modal h3 { font-size:17px; color:#c2410c; margin-bottom:4px; }
   .modal .mtip { font-size:12px; color:#64748b; margin-bottom:8px; }
   .modal label { display:block; font-size:12.5px; font-weight:700; margin:10px 0 4px; color:#1e293b; }
   .modal input { width:100%; padding:11px 12px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px;
     font-family:inherit; outline:none; background:#f8fafc; transition:border-color .2s, background .2s; }
-  .modal input:focus { border-color:#10b981; background:white; }
+  .modal input:focus { border-color:#f97316; background:white; }
   .modal input.miss { border-color:#ef4444; background:#fef2f2; }
   .modal .btns { display:flex; gap:10px; margin-top:16px; }
   .modal .btns button { flex:1; padding:12px; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:transform .12s; }
   .modal .btns button:active { transform:scale(.97); }
   .btn-cancel { background:#f1f5f9; color:#64748b; }
-  .btn-ok { background:linear-gradient(135deg,#059669,#10b981); color:white; box-shadow:0 3px 10px rgba(16,185,129,.3); }
+  .btn-ok { background:linear-gradient(135deg,#ea580c,#f97316); color:white; box-shadow:0 3px 10px rgba(249,115,22,.3); }
 
   /* 结束屏 */
   #endBox { display:none; flex:1; flex-direction:column; justify-content:center; align-items:center; padding:30px 24px;
@@ -144,21 +144,21 @@
   #endBox .big { font-size:56px; margin-bottom:12px; animation:pop .5s cubic-bezier(.34,1.56,.64,1); }
   @keyframes pop { 0%{transform:scale(0);} 70%{transform:scale(1.15);} 100%{transform:scale(1);} }
   #endBox h2 { font-size:20px; margin-bottom:8px;
-    background:linear-gradient(120deg,#047857,#10b981); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    background:linear-gradient(120deg,#c2410c,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
   #endBox p { font-size:13.5px; color:#64748b; margin-bottom:18px; line-height:1.7; }
-  .code-card { background:rgba(255,255,255,.95); border:2px dashed #34d399; border-radius:18px; padding:18px 26px;
-    margin:6px 0 8px; box-shadow:0 8px 24px rgba(16,185,129,.14); }
+  .code-card { background:rgba(255,255,255,.95); border:2px dashed #fb923c; border-radius:18px; padding:18px 26px;
+    margin:6px 0 8px; box-shadow:0 8px 24px rgba(249,115,22,.14); }
   .code-card .cl { font-size:12px; color:#64748b; margin-bottom:6px; }
   .code-card .cv { font-size:30px; font-weight:800; letter-spacing:2.5px; font-family:'Consolas','SF Mono',monospace;
-    background:linear-gradient(120deg,#047857,#059669); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .copy-btn { margin-top:10px; padding:10px 24px; background:#d1fae5; color:#047857; border:none; border-radius:22px;
+    background:linear-gradient(120deg,#c2410c,#ea580c); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .copy-btn { margin-top:10px; padding:10px 24px; background:#ffedd5; color:#c2410c; border:none; border-radius:22px;
     font-size:13.5px; font-weight:700; cursor:pointer; transition:transform .12s, background .2s; }
-  .copy-btn:active { transform:scale(.95); background:#a7f3d0; }
+  .copy-btn:active { transform:scale(.95); background:#fed7aa; }
   .back-survey { margin-top:20px; padding:16px 36px; border:none; border-radius:14px; font-size:16px; font-weight:700;
-    color:white; background:linear-gradient(135deg,#059669,#10b981); box-shadow:0 6px 16px rgba(16,185,129,.35);
+    color:white; background:linear-gradient(135deg,#ea580c,#f97316); box-shadow:0 6px 16px rgba(249,115,22,.35);
     cursor:pointer; transition:transform .15s; letter-spacing:.5px; }
   .back-survey:active { transform:scale(.97); }
-  .copy-ok { color:#059669; font-size:12.5px; margin-top:8px; min-height:18px; font-weight:600; }
+  .copy-ok { color:#ea580c; font-size:12.5px; margin-top:8px; min-height:18px; font-weight:600; }
 
   /* 调研员工具区（结束屏底部，低调虚线分隔） */
   #resBox { display:none; width:100%; margin-top:22px; padding-top:14px; border-top:1px dashed #cbd5e1; }
@@ -172,25 +172,25 @@
   #adminPage { display:none; max-width:520px; margin:0 auto; min-height:100vh; padding:20px 16px; }
   #adminPage.on { display:block; }
   #adminPage h2 { font-size:18px; margin-bottom:4px;
-    background:linear-gradient(120deg,#047857,#059669); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    background:linear-gradient(120deg,#c2410c,#ea580c); -webkit-background-clip:text; background-clip:text; color:transparent; }
   #adminPage .asub { font-size:12.5px; color:#64748b; margin-bottom:14px; }
   #adminPage .stat { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
   #adminPage .stat div { background:rgba(255,255,255,.92); border:1px solid #e2e8f0; border-radius:12px; padding:10px 4px;
     text-align:center; box-shadow:0 2px 6px rgba(15,23,42,.04); }
   #adminPage .stat b { display:block; font-size:20px;
-    background:linear-gradient(120deg,#047857,#059669); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    background:linear-gradient(120deg,#c2410c,#ea580c); -webkit-background-clip:text; background-clip:text; color:transparent; }
   #adminPage .stat span { font-size:11px; color:#64748b; }
   #adminPage .abtns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
   #adminPage .abtns button { flex:1; min-width:130px; padding:12px; border-radius:12px; font-size:13.5px; font-weight:700;
-    cursor:pointer; border:none; color:white; background:linear-gradient(135deg,#059669,#10b981);
-    box-shadow:0 3px 10px rgba(16,185,129,.3); transition:transform .12s; }
+    cursor:pointer; border:none; color:white; background:linear-gradient(135deg,#ea580c,#f97316);
+    box-shadow:0 3px 10px rgba(249,115,22,.3); transition:transform .12s; }
   #adminPage .abtns button:active { transform:scale(.97); }
   #adminPage .abtns button.gray { background:#64748b; box-shadow:none; }
   #adminPage .abtns button.red { background:#dc2626; box-shadow:none; }
   #adminPage textarea { width:100%; height:200px; font-size:11px; border:1px solid #e2e8f0; border-radius:10px; padding:10px; font-family:Consolas,monospace; }
   .rec-item { background:rgba(255,255,255,.92); border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px;
     margin-bottom:8px; font-size:12px; box-shadow:0 2px 6px rgba(15,23,42,.04); }
-  .rec-item b { color:#047857; }
+  .rec-item b { color:#c2410c; }
   .rec-item .meta { color:#94a3b8; font-size:11px; margin-top:2px; }
 </style>
 </head>
@@ -332,18 +332,22 @@ const LOG_KEY = 'demoLog';
 
 const SCEN = {
   canyin:{code:'CY', icon:'🍜', name:'餐饮', role:'AI智能体服务员', price:'8元/桌', fee:'本次AI智能服务费8元/桌已计入账单',
+    menu:'今日菜单：招牌红烧肉 38元｜清蒸鲈鱼 48元｜宫保鸡丁 32元(微辣)｜蒜蓉西兰花 18元｜酸辣土豆丝 15元(辣)｜麻婆豆腐 22元(辣)｜糖醋排骨 35元｜白切鸡 28元｜清炒时蔬 12元｜蒜蓉粉丝蒸扇贝 58元｜水煮鱼 58元(辣)｜番茄蛋花汤 12元。本店招牌：招牌红烧肉、清蒸鲈鱼、蒜蓉粉丝蒸扇贝。',
     tasks:['① 说出偏好/需求','② 获得推荐','③ 完成下单'],
     ctx:'你是一家餐厅的AI智能体服务员。帮顾客推荐菜品、记住他的口味忌口、协助点单加菜。',
     greet:{warm:'您好呀～欢迎光临！今天想吃点什么？有忌口或偏好也可以告诉我哦！', mech:'您好。我是AI智能体服务员。请说明您的用餐需求。'}},
   chaoshi:{code:'CS', icon:'🛒', name:'商超', role:'AI智能体导购员', price:'5元/次', fee:'本次AI智能服务费5元/次已计入账单',
+    menu:'分区导览：果蔬区(A区·入口左侧)｜肉禽蛋区(B区)｜乳制品区(C区冷藏柜)｜零食饮料区(D区3-5排)｜日用洗护区(E区6-8排)｜粮油调味区(F区9-10排)。今日促销：无糖酸奶 第2件半价｜抽纸3连包 19.9元｜鸡蛋30枚 21.9元｜洗衣液2kg 29.9元｜薯片 买二送一。比价参考(纯牛奶250ml×12盒)：蒙牛 39.9元/箱｜伊利 42元/箱｜牧场之光 33.9元/箱(最划算)。',
     tasks:['① 说出要找的商品','② 获得推荐/比价','③ 完成结账'],
     ctx:'你是一家大型超市的AI智能体导购员。帮顾客找商品位置（告诉他在哪个区哪排货架）、比价、介绍促销。',
     greet:{warm:'您好呀～欢迎光临！想找什么商品告诉我，我帮您找位置还能比价！', mech:'您好。我是AI智能体导购员。请说明要找的商品。'}},
   jiudian:{code:'JD', icon:'🏨', name:'酒店', role:'AI智能体客房管家', price:'30元/晚', fee:'本次AI管家服务费30元/晚已计入房费',
+    menu:'房价：大床房 328元/晚｜双床房 358元/晚｜亲子房 428元/晚｜行政套房 588元/晚（均含双早）。免费送物(机器人5-10分钟送达)：矿泉水、浴巾、牙具、拖鞋、手机充电器。周边美食：张记川菜馆(步行5分钟·人均60元)｜潮汕牛肉火锅(步行8分钟·人均90元)｜星巴克(步行3分钟)｜24小时便利店(酒店楼下)。续住政策：当天房价9折，每日16点前可办理。',
     tasks:['① 提出服务需求','② 获得安排/推荐','③ 完成办理'],
     ctx:'你是一家酒店的AI智能体客房管家。帮顾客安排机器人送物上门、推荐周边餐饮、办理续住。',
     greet:{warm:'晚上好呀～欢迎入住！需要送东西到房间，或想问周边好吃的，随时跟我说！', mech:'您好。我是AI智能体客房管家。请说明服务需求。'}},
   lingshou:{code:'LS', icon:'🏬', name:'零售', role:'AI智能体导购顾问', price:'15元/次', fee:'本次AI导购服务费15元/次已计入账单',
+    menu:'热卖单品：连帽卫衣 199元(S-XL)｜直筒牛仔裤 259元(28-36码)｜白衬衫 159元(S-L)｜针织开衫 229元(均码)｜A字半裙 189元(S-L)｜风衣外套 399元(M/L)。当前库存：卫衣L码仅剩3件｜牛仔裤32码缺货｜风衣M码剩5件｜其余尺码充足。会员折扣：普通会员95折｜银卡9折｜金卡85折｜全场满500减50。',
     tasks:['① 说出尺码/风格需求','② 获得搭配推荐','③ 完成结账'],
     ctx:'你是一家服装零售店的AI智能体导购顾问。帮顾客查尺码库存、做搭配推荐、介绍会员折扣。',
     greet:{warm:'欢迎光临呀～想找什么尺码、或需要我帮您搭配一套？跟我说就行！', mech:'您好。我是AI智能体导购顾问。请说明需求。'}}
@@ -416,16 +420,19 @@ function buildSysPrompt(s, c){
     ? '遇到选择时给出2个具体选项并比较优劣，让顾客自己选，你不替顾客做决定。'
     : '只给建议和推荐，由顾客自己决定和确认；绝不主动说"已下单/已办理"，必须等顾客明确说"下单/确认/就这个"后才确认。';
   return s.ctx + '\n'
+    + '【本店资料】以下为本店全部商品与服务信息，必须严格按资料回答，不得编造、增删或更改：\n' + s.menu + '\n'
     + '规则：\n'
-    + '1. 全程中文口语化，像真人店员一样对话。平时每次回复不超过60字；但当顾客索要菜单、价目表、促销清单、分区导览等列表信息时，必须分行列出完整条目（6-12行，每行"名称 价格"或"名称 位置"），此时可超过60字。\n'
-    + '2. 拟人化要求：' + anth + '\n'
-    + '3. 透明度要求：' + trans + '\n'
-    + '4. 准确率要求：' + acc + '\n'
-    + '5. 自主权要求：' + auto + '\n'
-    + '6. 主动询问并记住顾客的偏好，在后续推荐中体现"记住了"。\n'
-    + '7. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
-    + '8. 当顾客明确完成下单/结账/办理后，告知顾客"' + s.fee + '"，然后按拟人化要求道别，并在回复末尾单独输出[END]。\n'
-    + '9. 不脱离角色；不讨论你是AI模型或本实验；顾客问无关问题时礼貌引导回服务话题；不索要真实姓名电话等隐私信息。';
+    + '1. 全程中文口语化，像真人店员一样对话。平时每次回复不超过60字，但要有实质内容（口味、位置、价格等细节），不敷衍。\n'
+    + '2. 顾客索要菜单、价目表、促销清单、分区导览、库存等列表信息时：按【本店资料】分行列出对应的完整条目（每行"名称 价格"或"名称 位置"），此时可超过60字。\n'
+    + '3. 顾客问"推荐/招牌/哪个好"时：只从资料中挑2-4项，每项附一句理由，绝不把整个列表当作推荐。顾客问"还有别的吗"，如实告知资料内还有哪些（"菜单上一共就是这些"），不得编造资料之外的商品。\n'
+    + '4. 拟人化要求：' + anth + '\n'
+    + '5. 透明度要求：' + trans + '\n'
+    + '6. 准确率要求：' + acc + '\n'
+    + '7. 自主权要求：' + auto + '\n'
+    + '8. 主动询问并记住顾客的偏好，在后续推荐中体现"记住了"。\n'
+    + '9. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
+    + '10. 仅当顾客明确说出"下单/结账/就这些/确认办理"等完成意图、且你已为其完成下单/结账/办理后，才告知顾客"' + s.fee + '"，道别并在回复末尾单独输出[END]；只是看菜单、求推荐、咨询时绝不输出[END]。\n'
+    + '11. 不脱离角色；不讨论你是AI模型或本实验；顾客问无关问题时礼貌引导回服务话题；不索要真实姓名电话等隐私信息。';
 }
 
 /* ============ 状态 ============ */
@@ -608,7 +615,7 @@ async function send(preset){
     if(!r.ok){ const tx = await r.text(); throw new Error('HTTP '+r.status+'：'+tx.slice(0,80)); }
     const j = await r.json();
     let reply = (j.choices && j.choices[0] && j.choices[0].message.content) || '（无回复）';
-    const isEnd = reply.includes('[END]');
+    const isEnd = reply.includes('[END]') && reply.includes('服务费');
     reply = reply.replace('[END]','').trim();
     t.querySelector('.bubble').textContent = reply;
     messages.push({role:'assistant', content:reply});
