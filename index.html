@@ -861,20 +861,42 @@ function toggleRec(){
   };
   try{ recog.start(); }catch(e){ sysMsg('⚠️ 当前浏览器不支持语音输入，请用键盘打字。'); }
 }
-function speak(text){
-  if(!ttsOn || !TTS_OK || !text) return;
+let curAudio = null;
+const TTS_VOICE = 'tongtong';   // 彤彤(女声)；可选 xiaochen(男声)、chuichui
+async function speak(text){
+  if(!ttsOn || !text) return;
   const clean = text
     .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
     .replace(/[①②③④⑤⑥⑦⑧⑨⑩]/g, '')
     .replace(/[｜|]/g, '，');
   if(!clean.trim()) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(clean);
-  u.lang = 'zh-CN';
-  u.rate = 1.08;
-  speechSynthesis.speak(u);
+  if(curAudio){ try{ curAudio.pause(); }catch(e){} curAudio=null; }
+  if(TTS_OK) speechSynthesis.cancel();
+  /* 优先用智谱云端语音，失败降级浏览器语音 */
+  try{
+    const r = await fetch('api/tts', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text:clean, voice:TTS_VOICE, speed:1.05})
+    });
+    if(r.ok){
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      curAudio = new Audio(url);
+      curAudio.playbackRate = 1.02;
+      curAudio.onended = ()=>{ URL.revokeObjectURL(url); curAudio=null; };
+      curAudio.play();
+      return;
+    }
+  }catch(e){}
+  /* 降级：浏览器自带语音 */
+  if(TTS_OK){
+    const u = new SpeechSynthesisUtterance(clean);
+    u.lang = 'zh-CN'; u.rate = 1.08;
+    speechSynthesis.speak(u);
+  }
 }
 function stopVoice(){
+  if(curAudio){ try{ curAudio.pause(); }catch(e){} curAudio=null; }
   if(TTS_OK) speechSynthesis.cancel();
   if(recording && recog){ try{ recog.stop(); }catch(e){} }
 }
