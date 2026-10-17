@@ -476,11 +476,36 @@ function buildSysPrompt(s, c){
     + '10. 顾客发来预订/预约/续住信息时：先复述关键信息（人数/时间/物品），再按自主权要求确认办理。\n'
     + '11. 仅当顾客明确说出"下单/结账/就这些/确认办理"等完成意图、且你已为其完成下单/结账/办理后，才告知顾客"' + s.fee + '"，道别并在回复末尾单独输出[END]；只是看菜单、求推荐、咨询时绝不输出[END]。\n'
     + '12. 不脱离角色；不讨论你是AI模型或本实验；不索要真实姓名电话等隐私信息。\n'
-    + '13. 界面控制：当顾客说"看菜单/回到菜单/菜单界面/我想看菜单/返回菜单"等想回到服务菜单时，先回复一句引导语（如"好的，这就为您打开菜单～"），然后在回复末尾单独一行输出标记 [UI:MENU]，系统会自动展示菜单界面。';
+    + '13. 界面控制：当顾客说"看菜单/回到菜单/菜单界面/我想看菜单/返回菜单"等想回到服务菜单时，先回复一句引导语（如"好的，这就为您打开菜单～"），然后在回复末尾单独一行输出标记 [UI:MENU]，系统会自动展示菜单界面。\n'
+    + '14. 偏好记录：当你从顾客话中新了解到一个偏好或习惯（口味、忌口、预算、尺码、人数、常住房型、常买品牌等）时，在回复末尾单独一行输出标记 [MEM:偏好简述]，例如 [MEM:不吃辣、爱吃甜]；每条标记只记一项，一行一个，顾客看不到该标记。顾客纠正旧偏好时也输出新的 [MEM:]。';
 }
 
 /* ============ 状态 ============ */
 let scenKey=null, scen=null, cond=null, condKey=null, messages=[], turns=0, waiting=false, code='';
+
+/* ============ 用户ID & 云端偏好记忆 ============ */
+let UID = '';
+try{ UID = localStorage.getItem('demo_uid') || ''; }catch(e){}
+if(!UID){
+  UID = 'u' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  try{ localStorage.setItem('demo_uid', UID); }catch(e){}
+}
+async function loadMem(){
+  if(!IS_WEB) return '';
+  try{
+    const r = await fetch('api/memory?uid=' + encodeURIComponent(UID));
+    if(!r.ok) return '';
+    const j = await r.json();
+    return j.prefs || '';
+  }catch(e){ return ''; }
+}
+function saveMem(p){
+  if(!IS_WEB || !p) return;
+  fetch('api/memory', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({uid:UID, pref:p})
+  }).catch(()=>{});
+}
 
 function show(id){
   ['home','condPage','introPage','menuPage','endBox'].forEach(x=>{
@@ -591,7 +616,7 @@ function goHome(){
   document.getElementById('statusText').textContent='请选择体验场景';
 }
 
-function startChat(manualKey){
+async function startChat(manualKey){
   if(manualKey){ condKey = manualKey; }
   cond = CONDS[condKey];
   /* 体验编号：只有"同一场景+档位"（刷新/误返回）才复用；跨场景或跨档位一律重新生成，防止串号 */
@@ -599,7 +624,12 @@ function startChat(manualKey){
   code = (sessionStorage.getItem('demoSig') === sig) ? (sessionStorage.getItem('demoCode') || makeCode()) : makeCode();
   sessionStorage.setItem('demoSig', sig);
   sessionStorage.setItem('demoCode', code);
-  messages = [{role:'system', content:buildSysPrompt(scen, cond)}];
+  /* 读取老顾客偏好档案（云端数据库），注入系统提示词 */
+  const memPrefs = await loadMem();
+  const memBlock = memPrefs
+    ? '\n【老顾客档案】这位顾客之前在本店留下的偏好记录：' + memPrefs + '。请在合适时机自然地体现你记得他（比如"还是老样子吗？"），但不要生硬罗列档案；顾客表达新偏好时以新的为准，旧记录可视为已更新。\n'
+    : '';
+  messages = [{role:'system', content:buildSysPrompt(scen, cond) + memBlock}];
   turns = 0; waiting = false;
 
   /* 进入服务菜单主界面，AI 作为一旁待命的服务机器人 */
@@ -621,7 +651,9 @@ function startChat(manualKey){
   const fab = document.getElementById('aiFab');
   fab.style.display='flex';
   const tip = document.getElementById('aiTip');
-  tip.textContent = cond.anth==='warm' ? '您好～需要帮忙随时叫我！😊' : '您好。需要服务请点击。';
+  tip.textContent = memPrefs
+    ? (cond.anth==='warm' ? '欢迎回来～这次还按您的喜好来？😊' : '欢迎回来。已读取您的偏好记录。')
+    : (cond.anth==='warm' ? '您好～需要帮忙随时叫我！😊' : '您好。需要服务请点击。');
   tip.style.display='block';
   setTimeout(()=>{ if(!chatOpen) tip.style.display='none'; }, 5000);
 
@@ -719,7 +751,10 @@ async function send(preset){
     let reply = (j.choices && j.choices[0] && j.choices[0].message.content) || '（无回复）';
     const isEnd = reply.includes('[END]') && reply.includes('服务费');
     let uiMenu = reply.includes('[UI:MENU]');
-    reply = reply.replace('[UI:MENU]','').replace('[END]','').trim();
+    /* 提取并保存偏好记忆标记 [MEM:...] */
+    const mems = (reply.match(/\[MEM:[^\]]+\]/g) || []).map(m => m.slice(5, -1).trim()).filter(Boolean);
+    reply = reply.replace('[UI:MENU]','').replace('[END]','').replace(/\[MEM:[^\]]*\]/g,'').trim();
+    mems.forEach(saveMem);
     t.querySelector('.bubble').textContent = reply;
     messages.push({role:'assistant', content:reply});
     chat.scrollTop = chat.scrollHeight;
