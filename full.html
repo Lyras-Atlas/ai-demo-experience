@@ -1020,7 +1020,7 @@ async function speak(text){
   try{
     const r = await fetch('api/tts', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({text:clean, voice:TTS_VOICE, speed:1.05})
+      body: JSON.stringify({text:clean, voice: (cond && cond.anth==='mech') ? 'male' : 'female', speed:1.0})
     });
     if(r.ok){
       const blob = await r.blob();
@@ -1032,9 +1032,22 @@ async function speak(text){
       return;
     }
   }catch(e){}
+  /* 降级：浏览器自带语音，优先选更自然的中文女声 */
   if(TTS_OK){
     const u = new SpeechSynthesisUtterance(clean);
-    u.lang = 'zh-CN'; u.rate = 1.08;
+    u.lang = 'zh-CN'; u.rate = 1.05;
+    const voices = speechSynthesis.getVoices();
+    const isMech = cond && cond.anth === 'mech';
+    const pref = isMech
+      ? ['Yunxi','Yunyang','Kangkang','Yunjian']
+      : ['Xiaoxiao','Yaoyao','Huihui','Xiaoyi','Tingting','Sinji'];
+    let picked = null;
+    for(const p of pref){
+      picked = voices.find(v => (v.name||'').toLowerCase().includes(p.toLowerCase()) && v.lang.startsWith('zh'));
+      if(picked) break;
+    }
+    if(!picked) picked = voices.find(v => v.lang && v.lang.startsWith('zh'));
+    if(picked) u.voice = picked;
     speechSynthesis.speak(u);
   }
 }
